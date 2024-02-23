@@ -59,7 +59,7 @@ Public Module ZoppaReports
             Next
         End If
 
-        printer.DefaultPageSettings.Landscape = (rsiz.Orientation = PageOrientation.Landscape)
+        printer.DefaultPageSettings.Landscape = (rsiz.Orientation = ReportsOrientation.Landscape)
 
         Dim handler As New PrintHandler(res)
         Try

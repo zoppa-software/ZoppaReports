@@ -51,12 +51,11 @@ Public NotInheritable Class ReportsInformation
         Dim knd = root.Attributes("kind").GetValue(Of String)(parameter)
         Dim wid = root.Attributes("width").GetValue(Of Double)(parameter)
         Dim hig = root.Attributes("height").GetValue(Of Double)(parameter)
-        Dim ort = root.Attributes("orientation").GetValue(Of PageOrientation)(parameter)
+        Dim ort = root.Attributes("orientation").GetValue(Of ReportsOrientation)(parameter)
 
         ' サイズ情報を取得する
         Dim sz As ReportsSize = Nothing
-        Dim ovl = If(ort.has, ort.value, PageOrientation.Landscape)
-
+        Dim ovl = If(ort.has, ort.value, ReportsOrientation.Landscape)
         If knd.has Then
             sz = ReportsSize.Search(knd.value)
             Me.Size = New ReportsSize(sz.Kind, sz.WidthInMM, sz.HeightInMM, ovl)

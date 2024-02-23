@@ -33,14 +33,14 @@ Namespace Designer
         End Property
 
         ''' <summary>ページ向きを取得する（インチ単位）</summary>
-        Public ReadOnly Property Orientation As PageOrientation = PageOrientation.Portrait
+        Public ReadOnly Property Orientation As ReportsOrientation = ReportsOrientation.Portrait
 
         ''' <summary>コンストラクタ。</summary>
         ''' <param name="kd">種類。</param>
         ''' <param name="wmm">幅。</param>
         ''' <param name="hmm">高さ。</param>
         ''' <param name="ort">向き。</param>
-        Friend Sub New(kd As PaperKind, wmm As Double, hmm As Double, ort As PageOrientation)
+        Friend Sub New(kd As PaperKind, wmm As Double, hmm As Double, ort As ReportsOrientation)
             Me.Kind = kd
             Me.WidthInMM = wmm
             Me.HeightInMM = hmm
@@ -70,22 +70,22 @@ Namespace Designer
         End Function
 
         ''' <summary>A4サイズを取得する。</summary>
-        Public Shared ReadOnly Property A2 As ReportsSize = New ReportsSize(PaperKind.A2, 420, 594, PageOrientation.Portrait)
+        Public Shared ReadOnly Property A2 As ReportsSize = New ReportsSize(PaperKind.A2, 420, 594, ReportsOrientation.Portrait)
 
         ''' <summary>A3サイズを取得する。</summary>
-        Public Shared ReadOnly Property A3 As ReportsSize = New ReportsSize(PaperKind.A3, 297, 420, PageOrientation.Portrait)
+        Public Shared ReadOnly Property A3 As ReportsSize = New ReportsSize(PaperKind.A3, 297, 420, ReportsOrientation.Portrait)
 
         ''' <summary>A4サイズを取得する。</summary>
-        Public Shared ReadOnly Property A4 As ReportsSize = New ReportsSize(PaperKind.A4, 210, 297, PageOrientation.Portrait)
+        Public Shared ReadOnly Property A4 As ReportsSize = New ReportsSize(PaperKind.A4, 210, 297, ReportsOrientation.Portrait)
 
         ''' <summary>A5サイズを取得する。</summary>
-        Public Shared ReadOnly Property A5 As ReportsSize = New ReportsSize(PaperKind.A5, 148, 210, PageOrientation.Portrait)
+        Public Shared ReadOnly Property A5 As ReportsSize = New ReportsSize(PaperKind.A5, 148, 210, ReportsOrientation.Portrait)
 
         ''' <summary>A6サイズを取得する。</summary>
-        Public Shared ReadOnly Property B4 As ReportsSize = New ReportsSize(PaperKind.B4, 257, 364, PageOrientation.Portrait)
+        Public Shared ReadOnly Property B4 As ReportsSize = New ReportsSize(PaperKind.B4, 257, 364, ReportsOrientation.Portrait)
 
         ''' <summary>B5サイズを取得する。</summary>
-        Public Shared ReadOnly Property B5 As ReportsSize = New ReportsSize(PaperKind.B5, 182, 257, PageOrientation.Portrait)
+        Public Shared ReadOnly Property B5 As ReportsSize = New ReportsSize(PaperKind.B5, 182, 257, ReportsOrientation.Portrait)
 
         ''' <summary>文字列に変換する。</summary>
         ''' <param name="size">サイズ。</param>
