@@ -39,6 +39,33 @@ Partial Module ParserAnalysis
 
     End Class
 
+    ''' <summary>三項演算子解析。</summary>
+    Private Class MultiEvalParser
+        Implements IParser
+
+        ''' <summary>次のパーサーを設定、取得する。</summary>
+        Friend Property NextParser() As IParser
+
+        ''' <summary>解析を実行する。</summary>
+        ''' <param name="reader">入力トークンストリーム。</param>
+        ''' <returns>解析結果。</returns>
+        Public Function Parser(reader As TokenStream) As IExpression Implements IParser.Parser
+            Dim tml = Me.NextParser.Parser(reader)
+
+            If reader.HasNext AndAlso reader.Current.TokenType = GetType(QuestionToken) Then
+                reader.Move(1)
+                Dim tmTrue = Me.NextParser.Parser(reader)
+                If reader.HasNext AndAlso reader.Current.TokenType = GetType(ColonToken) Then
+                    reader.Move(1)
+                    tml = New MultiEvalExpress(tml, tmTrue, Me.NextParser.Parser(reader))
+                End If
+            End If
+
+            Return tml
+        End Function
+
+    End Class
+
     ''' <summary>論理解析。</summary>
     Private NotInheritable Class LogicalParser
         Implements IParser

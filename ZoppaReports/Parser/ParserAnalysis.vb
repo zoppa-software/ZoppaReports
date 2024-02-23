@@ -15,6 +15,7 @@ Friend Module ParserAnalysis
     ''' <returns>解析結果。</returns>
     Friend Function Executes(tokens As List(Of TokenPosition), parameter As Environments) As (ans As IToken, expr As IExpression)
         ' 式木を作成
+        Dim multiParser As New MultiEvalParser()
         Dim logicalParser As New LogicalParser()
         Dim compParser As New ComparisonParser()
         Dim addOrSubParser As New AddOrSubParser()
@@ -24,17 +25,18 @@ Friend Module ParserAnalysis
         Dim parenParser As New ParenParser()
 
         ' 解析クラスを構成
+        multiParser.NextParser = logicalParser
         logicalParser.NextParser = compParser
         compParser.NextParser = addOrSubParser
         addOrSubParser.NextParser = multiOrDivParser
         multiOrDivParser.NextParser = refParser
         refParser.NextParser = facParser
         facParser.NextParser = parenParser
-        parenParser.NextParser = logicalParser
+        parenParser.NextParser = multiParser
 
         ' トークン解析
         Dim tknPtr = New TokenStream(tokens)
-        Dim expr = logicalParser.Parser(tknPtr)
+        Dim expr = multiParser.Parser(tknPtr)
 
         ' 結果を取得する
         If Not tknPtr.HasNext Then

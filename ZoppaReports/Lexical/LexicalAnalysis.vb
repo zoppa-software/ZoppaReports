@@ -14,7 +14,10 @@ Namespace Lexical
         ''' <param name="input">対象文字列。</param>
         ''' <returns>トークンリスト。</returns>
         Function SplitToken(input As String) As List(Of TokenPosition)
-            Dim keychar As New HashSet(Of Char)(New Char() {"+"c, "-"c, "*"c, "/"c, "("c, ")"c, "="c, "<"c, ">"c, "!"c, ","c, "."c, "["c, "]"c, ChrW(0)})
+            Dim keychar As New HashSet(Of Char)(New Char() {
+                "+"c, "-"c, "*"c, "/"c, "("c, ")"c, "="c, "<"c, ">"c,
+                "!"c, ","c, "."c, "["c, "]"c, "?"c, ":"c, ChrW(0)
+            })
             Dim tokens As New List(Of TokenPosition)()
 
             Dim reader = New StringPtr(input)
@@ -106,6 +109,12 @@ Namespace Lexical
                         '    reader.Move(1)
                         'ElseIf c = "#"c Then
                         '    tokens.Add(New TokenPosition(CreateDateToken(reader), pos))
+                    ElseIf reader.EqualKeyword("?") Then
+                        tokens.Add(New TokenPosition(QuestionToken.Value, pos))
+                        reader.Move(1)
+                    ElseIf reader.EqualKeyword(":") Then
+                        tokens.Add(New TokenPosition(ColonToken.Value, pos))
+                        reader.Move(1)
                     ElseIf c = "'"c Then
                         tokens.Add(New TokenPosition(CreateStringToken(reader, "'"c), pos))
                     ElseIf c = """"c Then

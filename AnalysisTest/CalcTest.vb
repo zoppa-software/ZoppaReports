@@ -371,4 +371,38 @@ Public Class CalcTest
         End Using
     End Sub
 
+    <Fact>
+    Sub MultOperatorTest()
+        Dim a1 = "1 > 0 ? true : false".Executes().Contents
+        Assert.True(a1)
+
+        Dim a2 = "1 < 0 ? true : false".Executes().Contents
+        Assert.False(a2)
+
+        Dim a3 = "1 > 0 ? 1 : 0".Executes().Contents
+        Assert.Equal(a3, 1)
+
+        Dim a4 = "1 < 0 ? 1 : 0".Executes().Contents
+        Assert.Equal(a4, 0)
+
+        Dim a5 = "1 > 0 ? 1 + 1 : 0".Executes().Contents
+        Assert.Equal(a5, 2)
+
+        Dim a6 = "1 < 0 ? 1 + 1 : 0".Executes().Contents
+        Assert.Equal(a6, 0)
+
+        Dim a7 = "1 > 0 ? 1 + 1 : 0 + 1".Executes().Contents
+        Assert.Equal(a7, 2)
+
+        Dim a8 = "1 < 0 ? 1 + 1 : 0 + 1".Executes().Contents
+        Assert.Equal(a8, 1)
+
+        Dim a9 = "1 > 0 ? 1 + 1 : (0 + 1 ? 1 : 0)".Executes().Contents
+        Assert.Equal(a9, 2)
+
+        Assert.Throws(Of InvalidOperationException)(
+            Function() "1 < 0 ? 1 + 1 : (0 + 1 ? 1 : 0)".Executes().Contents
+        )
+    End Sub
+
 End Class
