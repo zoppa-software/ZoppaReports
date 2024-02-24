@@ -5,6 +5,7 @@ Imports System.Reflection
 Imports System.Text
 Imports Microsoft.Extensions.Logging
 Imports ZoppaReports.Exceptions
+Imports ZoppaReports.Tokens
 
 ''' <summary>環境変数クラス。</summary>
 ''' <typeparam name="T">対象クラス。</typeparam>
@@ -124,6 +125,29 @@ Public NotInheritable Class Environments
             Throw New ReportsAnalysisException($"指定したプロパティは配列ではありません:{name}")
         End If
     End Function
+
+    ''' <summary>指定した名称のメソッドを取得します。</summary>
+    ''' <param name="name">メソッド名。</param>
+    ''' <param name="value">値。</param>
+    Public Function GetMethod(name As String) As Func(Of Object(), IToken)
+        Select Case name.ToLower()
+            Case "format"
+                Return Function(args As Object())
+                           If args.Length = 0 Then
+                               Throw New ReportsAnalysisException("format関数に引数を設定してください。")
+                           ElseIf args.Length = 1 Then
+                               Return New StringToken(args(0).ToString(), """"c)
+                           Else
+                               Return New StringToken(String.Format(args(0).ToString(), args.Skip(1).ToArray()), """"c)
+                           End If
+                       End Function
+        End Select
+        Throw New ReportsAnalysisException("有効な関数を指定していません。")
+    End Function
+
+    ''' <summary>指定した名称のプロパティに値を設定します。</summary>
+    ''' <param name="name">プロパティ名。</param>
+    ''' <param name="value">値。</param>
 
     ''' <summary>環境値をコピーします。</summary>
     ''' <returns>コピーされた環境値。</returns>

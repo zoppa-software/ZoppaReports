@@ -1,6 +1,7 @@
 ﻿Option Strict On
 Option Explicit On
 
+Imports System.IO
 Imports ZoppaReports.Exceptions
 Imports ZoppaReports.Express
 Imports ZoppaReports.Tokens
@@ -35,6 +36,34 @@ Partial Module ParserAnalysis
             Else
                 Return Me.NextParser.Parser(reader)
             End If
+        End Function
+
+    End Class
+
+    ''' <summary>カンマ分割解析。</summary>
+    Private Class CommaSplitParser
+        Implements IParser
+
+        ''' <summary>次のパーサーを設定、取得する。</summary>
+        Friend Property NextParser() As IParser
+
+        ''' <summary>解析を実行する。</summary>
+        ''' <param name="reader">入力トークンストリーム。</param>
+        ''' <returns>解析結果。</returns>
+        Public Function Parser(reader As TokenStream) As IExpression Implements IParser.Parser
+            Dim res As New List(Of IExpression)()
+
+            Do While reader.HasNext
+                res.Add(Me.NextParser.Parser(reader))
+
+                If reader.Current.TokenType = GetType(CommaToken) Then
+                    reader.Move(1)
+                Else
+                    Exit Do
+                End If
+            Loop
+
+            Return New CommaSplitExpress(res)
         End Function
 
     End Class
@@ -262,12 +291,22 @@ Partial Module ParserAnalysis
                     reader.Move(1)
                     Return CreateParenExpress(Of LParenToken, RParenToken)(reader, Me.NextParser)
 
+                Case GetType(LBracketToken)
+                    reader.Move(1)
+                    Dim arrParser As New CommaSplitParser With {.NextParser = Me.NextParser}
+                    Return CreateParenExpress(Of LBracketToken, RBracketToken)(reader, arrParser)
+
                 Case GetType(IdentToken)
                     reader.Move(1)
                     If reader.Current.TokenType Is GetType(LBracketToken) Then
                         reader.Move(1)
                         Dim numTkn = CreateParenExpress(Of LBracketToken, RBracketToken)(reader, Me.NextParser)
                         Return New ArrayValueExpress(tkn.GetToken(Of IdentToken)(), numTkn)
+                    ElseIf reader.Current.TokenType Is GetType(LParenToken) Then
+                        reader.Move(1)
+                        Dim arrParser As New CommaSplitParser With {.NextParser = Me.NextParser}
+                        Dim argTkn = CreateParenExpress(Of LParenToken, RParenToken)(reader, arrParser)
+                        Return New MethodEvalExpress(tkn.GetToken(Of IdentToken)(), argTkn)
                     Else
                         Return New ValueExpress(tkn.GetToken(Of IdentToken)())
                     End If

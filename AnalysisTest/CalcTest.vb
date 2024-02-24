@@ -403,6 +403,9 @@ Public Class CalcTest
         Assert.Throws(Of InvalidOperationException)(
             Function() "1 < 0 ? 1 + 1 : (0 + 1 ? 1 : 0)".Executes().Contents
         )
+
+        Dim a10 = "var <> null ? var : 'null'".Executes(New With {.var = "変数"}).Contents
+        Assert.Equal(a10, "変数")
     End Sub
 
 End Class

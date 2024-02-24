@@ -20,10 +20,21 @@ Public Class OtherReportsTest
         Dim a1 = (ReportsOrientation.Landscape = ReportsOrientation.Landscape)
         Assert.True(a1)
 
-        Dim a2 = (ReportsOrientation.Landscape = ReportsOrientation.Portrait)
-        Assert.False(a2)
+        Dim a11 = (ReportsOrientation.Landscape = Nothing)
+        Assert.False(a11)
+
+        Dim a12 = (Nothing = ReportsOrientation.Landscape)
+        Assert.False(a12)
+
+        Dim a2 = (ReportsOrientation.Landscape <> ReportsOrientation.Portrait)
+        Assert.True(a2)
 
         Assert.Throws(Of InvalidCastException)(Function() CType("xxx", ReportsOrientation))
+    End Sub
+
+    <Fact>
+    Public Sub ReportsSizeTest()
+
     End Sub
 
 End Class

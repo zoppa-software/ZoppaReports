@@ -54,7 +54,7 @@ Namespace Express
         ''' <param name="logger">ロガー。</param>
         ''' <param name="nestLv">ネストレベル。</param>
         Public Sub Logging(logger As ILogger, nestLv As Integer) Implements IExpression.Logging
-            logger?.LogTrace(New String(" "c, nestLv * 2) & Me.ToString())
+            logger?.LogTrace("{}", New String(" "c, nestLv * 2) & Me.ToString())
             Me.mCondition.Logging(logger, nestLv + 1)
             Me.mTrue.Logging(logger, nestLv + 1)
             Me.mFalse.Logging(logger, nestLv + 1)

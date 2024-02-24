@@ -104,9 +104,9 @@ Namespace Lexical
                     ElseIf reader.EqualKeyword("!") Then
                         tokens.Add(New TokenPosition(NotToken.Value, pos))
                         reader.Move(1)
-                        'ElseIf reader.EqualKeyword(",") Then
-                        '    tokens.Add(New TokenPosition(CommaToken.Value, pos))
-                        '    reader.Move(1)
+                    ElseIf reader.EqualKeyword(",") Then
+                        tokens.Add(New TokenPosition(CommaToken.Value, pos))
+                        reader.Move(1)
                         'ElseIf c = "#"c Then
                         '    tokens.Add(New TokenPosition(CreateDateToken(reader), pos))
                     ElseIf reader.EqualKeyword("?") Then

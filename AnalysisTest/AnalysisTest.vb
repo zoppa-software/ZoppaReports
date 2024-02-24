@@ -65,6 +65,9 @@ Public Class AnalysisTest
         Assert.Throws(Of NotImplementedException)(Function() PlusToken.Value.Contents)
         Assert.Throws(Of NotImplementedException)(Function() RBracketToken.Value.Contents)
         Assert.Throws(Of NotImplementedException)(Function() RParenToken.Value.Contents)
+        Assert.Throws(Of NotImplementedException)(Function() CommaToken.Value.Contents)
+        Assert.Throws(Of NotImplementedException)(Function() ColonToken.Value.Contents)
+        Assert.Throws(Of NotImplementedException)(Function() QuestionToken.Value.Contents)
     End Sub
 
     <Fact>
@@ -239,6 +242,40 @@ Public Class AnalysisTest
                     Return "100 and null".Executes()
                 End Function
             )
+        End Using
+    End Sub
+
+    <Fact>
+    Sub ArrayTest()
+        Using logFacyory = LoggerFactory.Create(
+            Sub(config)
+                config.SetMinimumLevel(LogLevel.Trace)
+                config.AddConsole()
+            End Sub)
+            SetZoppaReportsLogFactory(logFacyory)
+
+            Dim ans1 = "[1, 2, 3, 4]".Executes().Contents
+            Assert.Equal(New Object() {1, 2, 3, 4}, ans1)
+
+            Assert.Throws(Of ReportsAnalysisException)(
+                Function()
+                    Return "['‚ ', '‚¢', '‚¤'][1]".Executes().Contents
+                End Function
+            )
+        End Using
+    End Sub
+
+    <Fact>
+    Sub Methidest()
+        Using logFacyory = LoggerFactory.Create(
+            Sub(config)
+                config.SetMinimumLevel(LogLevel.Trace)
+                config.AddConsole()
+            End Sub)
+            SetZoppaReportsLogFactory(logFacyory)
+
+            Dim ans1 = "format('{0:#.##}', val)".Executes(New With {.val = 1.2345678}).Contents
+            Assert.Equal("1.23", ans1)
         End Using
     End Sub
 
