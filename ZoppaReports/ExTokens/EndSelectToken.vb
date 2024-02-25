@@ -5,15 +5,15 @@ Imports ZoppaReports.Tokens
 
 Namespace ExTokens
 
-    ''' <summary>EndIfトークン。</summary>
-    Public NotInheritable Class EndIfToken
+    ''' <summary>EndSelectトークン。</summary>
+    Public NotInheritable Class EndSelectToken
         Implements IToken
 
         ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyInstance() As New Lazy(Of EndIfToken)(Function() New EndIfToken())
+        Private Shared ReadOnly Property LazyInstance() As New Lazy(Of EndSelectToken)(Function() New EndSelectToken())
 
         ''' <summary>唯一のインスタンスを返します。</summary>
-        Public Shared ReadOnly Property Value() As EndIfToken
+        Public Shared ReadOnly Property Value() As EndSelectToken
             Get
                 Return LazyInstance.Value
             End Get
@@ -31,7 +31,7 @@ Namespace ExTokens
         ''' <returns>トークン型。</returns>
         Public ReadOnly Property TokenType As Type Implements IToken.TokenType
             Get
-                Return GetType(EndIfToken)
+                Return GetType(EndSelectToken)
             End Get
         End Property
 
@@ -43,7 +43,7 @@ Namespace ExTokens
         ''' <summary>文字列条件を取得します。</summary>
         ''' <returns>文字列表現。</returns>
         Public Overrides Function ToString() As String
-            Return "End If"
+            Return "End Select"
         End Function
 
     End Class

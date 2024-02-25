@@ -1,7 +1,9 @@
 ﻿Option Strict On
 Option Explicit On
 
-Namespace Tokens
+Imports ZoppaReports.Tokens
+
+Namespace ExTokens
 
     ''' <summary>Elseトークン。</summary>
     Public NotInheritable Class ElseToken

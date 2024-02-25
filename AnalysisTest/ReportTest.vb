@@ -262,26 +262,57 @@ Public Class ReportTest
 </report>", a3.repdata)
     End Sub
 
-    '    <Fact>
-    '    Public Sub SelectTest()
-    '        Dim pageXml1 =
-    '"<report kind=""A4"" padding=""5"">
-    '    <page>
-    '        <label x=""10"" y=""20"" width=""30"" height=""6"" brush=""black""/>
-    '    </page>
-    '</report>"
-    '        Dim a1 = ReadReportsInformation(pageXml1)
-    '        a1.CalcLocation()
-    '    End Sub
+    <Fact>
+    Public Sub SelectTest()
+        Dim pageXml1 =
+"<report kind=""A4"" padding=""5"">
+    <page>
+        {select lbl}
+        {case 'A'}
+        <label x=""10"" y=""20"" width=""30"" height=""6"" brush=""black""/>
+        {case 'B'}
+        <label x=""40"" y=""50"" width=""60"" height=""12"" brush=""black""/>
+        {else}
+        <label x=""70"" y=""80"" width=""90"" height=""18"" brush=""black""/>
+        {/select}
+    </page>
+</report>"
+        Dim a1 = ReadReportsInformation(pageXml1, New With {.lbl = "A"})
+        Assert.Equal("<report kind=""A4"" padding=""5"">
+    <page>
+        
+        <label x=""10"" y=""20"" width=""30"" height=""6"" brush=""black""/>
+        
+    </page>
+</report>", a1.repdata)
+
+        Dim a2 = ReadReportsInformation(pageXml1, New With {.lbl = "B"})
+        Assert.Equal("<report kind=""A4"" padding=""5"">
+    <page>
+        
+        <label x=""40"" y=""50"" width=""60"" height=""12"" brush=""black""/>
+        
+    </page>
+</report>", a2.repdata)
+
+        Dim a3 = ReadReportsInformation(pageXml1, New With {.lbl = "C"})
+        Assert.Equal("<report kind=""A4"" padding=""5"">
+    <page>
+        
+        <label x=""70"" y=""80"" width=""90"" height=""18"" brush=""black""/>
+        
+    </page>
+</report>", a3.repdata)
+    End Sub
 
     '    <Fact>
     '    Public Sub LabelTest()
     '        Dim pageXml1 =
     '"<report kind=""A4"" padding=""5"">
-    '    <page>
-    '        <label x=""10"" y=""20"" width=""30"" height=""6"" brush=""black""/>
-    '    </page>
-    '</report>"
+    '        <page>
+    '            <label x=""10"" y=""20"" width=""30"" height=""6"" brush=""black""/>
+    '        </page>
+    '    </report>"
     '        Dim a1 = ReadReportsInformation(pageXml1)
     '        a1.CalcLocation()
     '    End Sub

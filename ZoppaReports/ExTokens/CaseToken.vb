@@ -5,25 +5,18 @@ Imports ZoppaReports.Tokens
 
 Namespace ExTokens
 
-    ''' <summary>EndIfトークン。</summary>
-    Public NotInheritable Class EndIfToken
+    ''' <summary>Caseトークン。</summary>
+    Public NotInheritable Class CaseToken
         Implements IToken
 
-        ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyInstance() As New Lazy(Of EndIfToken)(Function() New EndIfToken())
-
-        ''' <summary>唯一のインスタンスを返します。</summary>
-        Public Shared ReadOnly Property Value() As EndIfToken
-            Get
-                Return LazyInstance.Value
-            End Get
-        End Property
+        ' 条件式トークン
+        Private ReadOnly mToken As List(Of TokenPosition)
 
         ''' <summary>格納されている値を取得する。</summary>
         ''' <returns>格納値。</returns>
         Public ReadOnly Property Contents As Object Implements IToken.Contents
             Get
-                Throw New NotImplementedException("使用できません")
+                Return Me.mToken
             End Get
         End Property
 
@@ -31,19 +24,20 @@ Namespace ExTokens
         ''' <returns>トークン型。</returns>
         Public ReadOnly Property TokenType As Type Implements IToken.TokenType
             Get
-                Return GetType(EndIfToken)
+                Return GetType(CaseToken)
             End Get
         End Property
 
         ''' <summary>コンストラクタ。</summary>
-        Private Sub New()
-
+        ''' <param name="tokens">ループ変数のトークン。</param>
+        Public Sub New(tokens As List(Of TokenPosition))
+            Me.mToken = tokens
         End Sub
 
         ''' <summary>文字列条件を取得します。</summary>
         ''' <returns>文字列表現。</returns>
         Public Overrides Function ToString() As String
-            Return "End If"
+            Return "Case"
         End Function
 
     End Class

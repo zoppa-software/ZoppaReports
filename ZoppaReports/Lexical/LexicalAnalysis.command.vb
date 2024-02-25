@@ -164,18 +164,15 @@ Namespace Lexical
                 Return EndForToken.Value
             ElseIf lowStr.StartsWith("/for") Then
                 Return EndForToken.Value
+            ElseIf lowStr.StartsWith("select ") Then
+                Return New SelectToken(SplitToken(codeStr.Substring(7)))
+            ElseIf lowStr.StartsWith("case ") Then
+                Return New CaseToken(SplitToken(codeStr.Substring(5)))
+            ElseIf lowStr.StartsWith("end select") Then
+                Return EndSelectToken.Value
+            ElseIf lowStr.StartsWith("/select") Then
+                Return EndSelectToken.Value
             End If
-
-
-            'ElseIf lowStr.StartsWith("select ") Then
-            '    Return New SelectToken(SplitToken(codeStr.Substring(7)))
-            'ElseIf lowStr.StartsWith("case ") Then
-            '    Return New CaseToken(SplitToken(codeStr.Substring(5)))
-            'ElseIf lowStr.StartsWith("end select") Then
-            '    Return EndSelectToken.Value
-            'ElseIf lowStr.StartsWith("/select") Then
-            '    Return EndSelectToken.Value
-            'End If
             Return Nothing
         End Function
 
