@@ -142,7 +142,23 @@ Namespace Lexical
             buffer.Clear()
             Dim lowStr = If(codeStr.Length > 10, codeStr.Substring(0, 10), codeStr).ToLower()
 
-            If lowStr.StartsWith("for ") Then
+            If lowStr.StartsWith("if ") Then
+                Return New IfToken(SplitToken(codeStr.Substring(3)))
+            ElseIf lowStr.StartsWith("elseif ") Then
+                Return New ElseIfToken(SplitToken(codeStr.Substring(7)))
+            ElseIf lowStr.StartsWith("else if ") Then
+                Return New ElseIfToken(SplitToken(codeStr.Substring(8)))
+            ElseIf lowStr.StartsWith("else") Then
+                Return ElseToken.Value
+            ElseIf lowStr.StartsWith("end if") Then
+                Return EndIfToken.Value
+            ElseIf lowStr.StartsWith("/if") Then
+                Return EndIfToken.Value
+            ElseIf lowStr.StartsWith("for each ") Then
+                Return New ForEachToken(SplitToken(codeStr.Substring(9)))
+            ElseIf lowStr.StartsWith("foreach ") Then
+                Return New ForEachToken(SplitToken(codeStr.Substring(8)))
+            ElseIf lowStr.StartsWith("for ") Then
                 Return New ForToken(SplitToken(codeStr.Substring(4)))
             ElseIf lowStr.StartsWith("end for") Then
                 Return EndForToken.Value
@@ -150,24 +166,7 @@ Namespace Lexical
                 Return EndForToken.Value
             End If
 
-            'If lowStr.StartsWith("if ") Then
-            '    Return New IfToken(SplitToken(codeStr.Substring(3)))
-            'ElseIf lowStr.StartsWith("else if ") Then
-            '    Return New ElseIfToken(SplitToken(codeStr.Substring(8)))
-            'ElseIf lowStr.StartsWith("else") Then
-            '    Return ElseToken.Value
-            'ElseIf lowStr.StartsWith("end if") Then
-            '    Return EndIfToken.Value
-            'ElseIf lowStr.StartsWith("/if") Then
-            '    Return EndIfToken.Value
-            'ElseIf lowStr.StartsWith("for each ") Then
-            '    Return New ForEachToken(SplitToken(codeStr.Substring(9)))
-            'ElseIf lowStr.StartsWith("foreach ") Then
-            '    Return New ForEachToken(SplitToken(codeStr.Substring(8)))
-            'ElseIf lowStr.StartsWith("end for") Then
-            '    Return EndForToken.Value
-            'ElseIf lowStr.StartsWith("/for") Then
-            '    Return EndForToken.Value
+
             'ElseIf lowStr.StartsWith("select ") Then
             '    Return New SelectToken(SplitToken(codeStr.Substring(7)))
             'ElseIf lowStr.StartsWith("case ") Then

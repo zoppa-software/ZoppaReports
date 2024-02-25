@@ -99,11 +99,15 @@ Public Module ZoppaReports
         Dim env As New Environments(parameter)
 
         Using scope = _logger.Value?.BeginScope(NameOf(ReadReportsInformation))
+            Logger.Value?.LogDebug("answer input template : {data}", data)
+
             ' テンプレートをトークンに分割
             Dim splited = LexicalAnalysis.SplitRepToken(data)
+            LoggingTokens(splited)
 
             ' テンプレートを置き換え
             data = ParserAnalysis.Replase(data, splited, env)
+            Logger.Value?.LogDebug("answer compile template : {data}", data)
 
             ' テンプレートを解析
             Return (ReportsInformation.Load(data), data)

@@ -6,7 +6,7 @@ Imports ZoppaReports.Tokens
 Namespace ExTokens
 
     ''' <summary>クエリトークン。</summary>
-    Public Class QueryToken
+    Public NotInheritable Class QueryToken
         Implements IToken
 
         ' 出力する文字列

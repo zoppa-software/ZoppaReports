@@ -139,17 +139,47 @@ Public Class ReportTest
         End Using
     End Sub
 
-    '    <Fact>
-    '    Public Sub IfTest()
-    '        Dim pageXml1 =
-    '"<report kind=""A4"" padding=""5"">
-    '    <page>
-    '        <label x=""10"" y=""20"" width=""30"" height=""6"" brush=""black""/>
-    '    </page>
-    '</report>"
-    '        Dim a1 = ReadReportsInformation(pageXml1)
-    '        a1.CalcLocation()
-    '    End Sub
+    <Fact>
+    Public Sub IfTest()
+        Dim pageXml1 =
+"<report kind=""A4"" padding=""5"">
+    <page>
+        {if no < 10}
+        <label x=""10"" y=""20"" width=""30"" height=""6"" brush=""black""/>
+        {elseif no < 20}
+        <label x=""40"" y=""50"" width=""60"" height=""12"" brush=""black""/>
+        {else}
+        <label x=""70"" y=""80"" width=""90"" height=""18"" brush=""black""/>
+        {end if}
+    </page>
+</report>"
+        Dim a1 = ReadReportsInformation(pageXml1, New With {.no = 5})
+        Assert.Equal("<report kind=""A4"" padding=""5"">
+    <page>
+        
+        <label x=""10"" y=""20"" width=""30"" height=""6"" brush=""black""/>
+        
+    </page>
+</report>", a1.repdata)
+
+        Dim a2 = ReadReportsInformation(pageXml1, New With {.no = 19})
+        Assert.Equal("<report kind=""A4"" padding=""5"">
+    <page>
+        
+        <label x=""40"" y=""50"" width=""60"" height=""12"" brush=""black""/>
+        
+    </page>
+</report>", a2.repdata)
+
+        Dim a3 = ReadReportsInformation(pageXml1, New With {.no = 30})
+        Assert.Equal("<report kind=""A4"" padding=""5"">
+    <page>
+        
+        <label x=""70"" y=""80"" width=""90"" height=""18"" brush=""black""/>
+        
+    </page>
+</report>", a3.repdata)
+    End Sub
 
     <Fact>
     Public Sub ForTest()
@@ -159,6 +189,7 @@ Public Class ReportTest
                 config.AddConsole()
             End Sub)
             SetZoppaReportsLogFactory(logFacyory)
+
             Dim pageXml1 =
 "<report kind=""A4"" padding=""5"">
     <page>
@@ -182,7 +213,53 @@ Public Class ReportTest
         <label x=""0"" y=""55"" width=""100"" height=""5"" brush=""black""/>
     </page>
 </report>", a1.repdata)
+
+            Dim pageXml2 =
+"<report kind=""A4"" padding=""5"">
+    <page>{foreach txt in ['あ', 'い', 'う']}
+        {for i = base + 0 to base + 2}
+        <label x=""0"" y=""#{i * 5}"" width=""100"" height=""5"" brush=""black"" text=""#{txt}""/>{/for}{/for}
+    </page>
+</report>"
+            Dim a2 = ReadReportsInformation(pageXml2, New With {.base = 2})
+            Assert.Equal("<report kind=""A4"" padding=""5"">
+    <page>
+        
+        <label x=""0"" y=""10"" width=""100"" height=""5"" brush=""black"" text=""あ""/>
+        <label x=""0"" y=""15"" width=""100"" height=""5"" brush=""black"" text=""あ""/>
+        <label x=""0"" y=""20"" width=""100"" height=""5"" brush=""black"" text=""あ""/>
+        
+        <label x=""0"" y=""10"" width=""100"" height=""5"" brush=""black"" text=""い""/>
+        <label x=""0"" y=""15"" width=""100"" height=""5"" brush=""black"" text=""い""/>
+        <label x=""0"" y=""20"" width=""100"" height=""5"" brush=""black"" text=""い""/>
+        
+        <label x=""0"" y=""10"" width=""100"" height=""5"" brush=""black"" text=""う""/>
+        <label x=""0"" y=""15"" width=""100"" height=""5"" brush=""black"" text=""う""/>
+        <label x=""0"" y=""20"" width=""100"" height=""5"" brush=""black"" text=""う""/>
+    </page>
+</report>", a2.repdata)
         End Using
+
+        Dim pageXml3 =
+"<report kind=""A4"" padding=""5"">
+    <page>{for i = base + 0 to base + 2}{foreach txt in texts}
+        <label x=""0"" y=""#{i * 5}"" width=""100"" height=""5"" brush=""black"" text=""#{txt}""/>{/for}{/for}
+    </page>
+</report>"
+        Dim a3 = ReadReportsInformation(pageXml3, New With {.base = 2, .texts = {"AA", "BB", "CC"}})
+        Assert.Equal("<report kind=""A4"" padding=""5"">
+    <page>
+        <label x=""0"" y=""10"" width=""100"" height=""5"" brush=""black"" text=""AA""/>
+        <label x=""0"" y=""10"" width=""100"" height=""5"" brush=""black"" text=""BB""/>
+        <label x=""0"" y=""10"" width=""100"" height=""5"" brush=""black"" text=""CC""/>
+        <label x=""0"" y=""15"" width=""100"" height=""5"" brush=""black"" text=""AA""/>
+        <label x=""0"" y=""15"" width=""100"" height=""5"" brush=""black"" text=""BB""/>
+        <label x=""0"" y=""15"" width=""100"" height=""5"" brush=""black"" text=""CC""/>
+        <label x=""0"" y=""20"" width=""100"" height=""5"" brush=""black"" text=""AA""/>
+        <label x=""0"" y=""20"" width=""100"" height=""5"" brush=""black"" text=""BB""/>
+        <label x=""0"" y=""20"" width=""100"" height=""5"" brush=""black"" text=""CC""/>
+    </page>
+</report>", a3.repdata)
     End Sub
 
     '    <Fact>

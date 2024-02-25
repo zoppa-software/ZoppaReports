@@ -5,8 +5,8 @@ Imports ZoppaReports.Tokens
 
 Namespace ExTokens
 
-    ''' <summary>Forトークン。</summary>
-    Public NotInheritable Class ForToken
+    ''' <summary>Ifトークン。</summary>
+    Public NotInheritable Class ElseIfToken
         Implements IToken
 
         ' 条件式トークン
@@ -24,7 +24,7 @@ Namespace ExTokens
         ''' <returns>トークン型。</returns>
         Public ReadOnly Property TokenType As Type Implements IToken.TokenType
             Get
-                Return GetType(ForToken)
+                Return GetType(ElseIfToken)
             End Get
         End Property
 
@@ -37,7 +37,7 @@ Namespace ExTokens
         ''' <summary>文字列条件を取得します。</summary>
         ''' <returns>文字列表現。</returns>
         Public Overrides Function ToString() As String
-            Return "For"
+            Return "ElseIf"
         End Function
 
     End Class

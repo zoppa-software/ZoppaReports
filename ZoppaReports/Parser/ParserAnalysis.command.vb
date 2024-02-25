@@ -52,29 +52,31 @@ Namespace Parser
                         End If
                         reader.Move(1)
 
-                    Case GetType(ForToken)
+                    Case GetType(IfToken)
                         reader.Move(1)
-                        Dim forTokens = CollectBlockToken(templateStr, reader, New Type() {GetType(ForToken)}, GetType(EndForToken))
-                        EvaluationFor(templateStr, tkn.Position, tkn.GetToken(Of ForToken)(), forTokens, buffer, parameter)
+                        Dim ifTokens = CollectBlockToken(templateStr, reader, New Type() {GetType(IfToken)}, GetType(EndIfToken))
+                        EvaluationIf(templateStr, tkn.Position, tkn.GetToken(Of IfToken)(), ifTokens, buffer, parameter)
+
+                    Case GetType(ElseIfToken), GetType(ElseToken), GetType(EndIfToken)
+                        Throw New ReportsAnalysisException($"ifが開始されていません。{vbCrLf}{templateStr}:{tkn.Position}")
 
                     Case GetType(EndForToken)
                         Throw New ReportsAnalysisException($"forが開始されていません。{vbCrLf}{templateStr}:{tkn.Position}")
 
-                        'Case GetType(IfToken)
-                        '    reader.Move(1)
-                        '    Dim ifTokens = CollectBlockToken(sqlQuery, reader, GetType(IfToken), GetType(EndIfToken))
-                        '    EvaluationIf(sqlQuery, tkn.GetToken(Of IfToken)(), ifTokens, buffer, parameter)
+                    Case GetType(ForToken)
+                        reader.Move(1)
+                        Dim forTokens = CollectBlockToken(templateStr, reader, New Type() {GetType(ForToken), GetType(ForEachToken)}, GetType(EndForToken))
+                        EvaluationFor(templateStr, tkn.Position, tkn.GetToken(Of ForToken)(), forTokens, buffer, parameter)
 
-                        'Case GetType(ElseIfToken), GetType(ElseToken), GetType(EndIfToken)
-                        '    Throw New DSqlAnalysisException($"ifが開始されていません。{vbCrLf}{sqlQuery}:{tkn.Position}")
+                    Case GetType(ForEachToken)
+                        reader.Move(1)
+                        Dim forTokens = CollectBlockToken(templateStr, reader, New Type() {GetType(ForToken), GetType(ForEachToken)}, GetType(EndForToken))
+                        EvaluationForEach(templateStr, tkn.Position, tkn.GetToken(Of ForEachToken)(), forTokens, buffer, parameter)
 
-                        'Case GetType(ForEachToken)
-                        '    reader.Move(1)
-                        '    Dim forTokens = CollectBlockToken(sqlQuery, reader, GetType(ForEachToken), GetType(EndForToken))
-                        '    EvaluationFor(sqlQuery, tkn.GetToken(Of ForEachToken)(), forTokens, buffer, parameter)
+                    Case GetType(EndForToken)
+                        Throw New ReportsAnalysisException($"forが開始されていません。{vbCrLf}{templateStr}:{tkn.Position}")
 
-                        'Case GetType(EndForToken)
-                        '    Throw New DSqlAnalysisException($"forが開始されていません。{vbCrLf}{sqlQuery}:{tkn.Position}")
+
 
                         'Case GetType(SelectToken)
                         '    reader.Move(1)
@@ -83,14 +85,6 @@ Namespace Parser
 
                         'Case GetType(CaseToken), GetType(EndSelectToken)
                         '    Throw New DSqlAnalysisException($"selectが開始されていません。{vbCrLf}{sqlQuery}:{tkn.Position}")
-
-                        'Case GetType(TrimToken)
-                        '    reader.Move(1)
-                        '    Dim trimTokens = CollectBlockToken(sqlQuery, reader, GetType(TrimToken), GetType(EndTrimToken))
-                        '    EvaluationTrim(sqlQuery, tkn.GetToken(Of TrimToken)(), trimTokens, buffer, parameter)
-
-                        'Case GetType(EndTrimToken)
-                        '    Throw New DSqlAnalysisException($"trimが開始されていません。{vbCrLf}{sqlQuery}:{tkn.Position}")
                 End Select
             Loop
         End Sub
@@ -155,6 +149,79 @@ Namespace Parser
             Throw New ReportsAnalysisException($"フロックが閉じられていません。{vbCrLf}{templateStr}:{startToken.Position}")
         End Function
 
+        ''' <summary>Ifを評価します。</summary>
+        ''' <param name="templateStr">テンプレート。</param>
+        ''' <param name="tempPos">評価位置。</param>
+        ''' <param name="sifToken">Ifのトークンリスト。</param>
+        ''' <param name="tokens">ブロック内のトークンリスト。</param>
+        ''' <param name="buffer">結果バッファ。</param>
+        ''' <param name="parameter">パラメータ。</param>
+        Private Sub EvaluationIf(templateStr As String,
+                                 tempPos As Integer,
+                                 sifToken As IToken,
+                                 tokens As List(Of TokenPosition),
+                                 buffer As StringBuilder,
+                                 parameter As Environments)
+            Dim blocks As New List(Of (condition As IToken, block As List(Of TokenPosition))) From {
+                (sifToken, New List(Of TokenPosition)())
+            }
+
+            ' If、ElseIf、Elseブロックを集める
+            Dim nest As Integer = 0
+            For Each tkn In tokens
+                Select Case tkn.TokenType
+                    Case GetType(IfToken)
+                        nest += 1
+                        blocks(blocks.Count - 1).block.Add(tkn)
+
+                    Case GetType(ElseIfToken)
+                        If nest = 0 Then
+                            blocks.Add((tkn.GetToken(Of ElseIfToken), New List(Of TokenPosition)()))
+                        Else
+                            blocks(blocks.Count - 1).block.Add(tkn)
+                        End If
+
+                    Case GetType(ElseToken)
+                        If nest = 0 Then
+                            blocks.Add((tkn.GetToken(Of ElseToken), New List(Of TokenPosition)()))
+                        Else
+                            blocks(blocks.Count - 1).block.Add(tkn)
+                        End If
+
+                    Case GetType(EndIfToken)
+                        If nest = 0 Then
+                            Exit For
+                        Else
+                            nest -= 1
+                            blocks(blocks.Count - 1).block.Add(tkn)
+                        End If
+
+                    Case Else
+                        blocks(blocks.Count - 1).block.Add(tkn)
+                End Select
+            Next
+
+            ' If、ElseIf、Elseブロックを評価
+            Dim lclbuf As New StringBuilder()
+            For Each tkn In blocks
+                Select Case tkn.condition.TokenType
+                    Case GetType(IfToken), GetType(ElseIfToken)
+                        ' 条件を評価して真ならば、ブロックを出力
+                        Dim ts As New TokenStream(CType(tkn.condition.Contents, List(Of TokenPosition)))
+                        Dim answer = mMultiParser.Parser(ts).Executes(parameter).Contents
+                        If TypeOf answer Is Boolean AndAlso CBool(answer) Then
+                            ReplaseQuery(templateStr, New TokenStream(tkn.block), parameter, lclbuf)
+                            Exit For
+                        End If
+
+                    Case GetType(ElseToken)
+                        Dim tkns As New List(Of TokenPosition)(tkn.block)
+                        ReplaseQuery(templateStr, New TokenStream(tkns), parameter, lclbuf)
+                End Select
+            Next
+            buffer.Append(lclbuf.ToString())
+        End Sub
+
         ''' <summary>Forを評価します。</summary>
         ''' <param name="templateStr">テンプレート。</param>
         ''' <param name="tempPos">評価位置。</param>
@@ -215,12 +282,76 @@ Namespace Parser
 
                     Dim lclbuf As New StringBuilder()
                     ReplaseQuery(templateStr, New TokenStream(tokens), parameter, lclbuf)
-                    buffer.Append(lclbuf.ToString())
+                    buffer.Append(lclbuf)
 
                     parameter.RemoveVariant(varName)
                 Next
             Catch ex As Exception
                 Throw New ReportsException($"forの構文を間違えています。{vbCrLf}{templateStr}:{tempPos}", ex)
+            End Try
+        End Sub
+
+        ''' <summary>ForEachを評価します。</summary>
+        ''' <param name="templateStr">テンプレート。</param>
+        ''' <param name="tempPos">評価位置。</param>
+        ''' <param name="sforToken">Forのトークンリスト。</param>
+        ''' <param name="tokens">ブロック内のトークンリスト。</param>
+        ''' <param name="buffer">結果バッファ。</param>
+        ''' <param name="parameter">パラメータ。</param>
+        Private Sub EvaluationForEach(templateStr As String,
+                                      tempPos As Integer,
+                                      sforToken As ForEachToken,
+                                      tokens As List(Of TokenPosition),
+                                      buffer As StringBuilder,
+                                      parameter As Environments)
+            '----------------
+            ' トークン解析
+            '----------------
+            Dim ts As New TokenStream(CType(sforToken.Contents, List(Of TokenPosition)))
+
+            ' カウンタ変数を取得
+            Dim varName As String
+            Dim varContents = ts.Current.GetToken(Of IdentToken)().Contents
+            If varContents IsNot Nothing AndAlso Not parameter.IsDefainedName(varContents.ToString()) Then
+                varName = varContents.ToString()
+            Else
+                Throw New ReportsAnalysisException($"変数が定義済みです。{vbCrLf}{templateStr}:{tempPos}")
+            End If
+            ts.Move(1)
+
+            ' toトークンを取得
+            Dim toToken = ts.Current.GetToken(Of IdentToken)()
+            If toToken Is Nothing OrElse toToken.ToString().ToLower() <> "in" Then
+                Throw New ReportsAnalysisException($"foreachの構文を間違えています。{vbCrLf}{templateStr}:{tempPos}")
+            End If
+            ts.Move(1)
+
+            ' 終了値を取得
+            Dim collectionToken = mMultiParser.Parser(ts)
+            Dim collection = TryCast(collectionToken.Executes(parameter).Contents, IEnumerable)
+            If collection Is Nothing Then
+                Throw New ReportsAnalysisException($"foreachの構文を間違えています。{vbCrLf}{templateStr}:{tempPos}")
+            End If
+
+            If ts.HasNext Then
+                Throw New ReportsAnalysisException($"foreachの構文を間違えています。{vbCrLf}{templateStr}:{tempPos}")
+            End If
+
+            '----------------
+            ' ループ実行
+            '----------------
+            Try
+                For Each v In collection
+                    parameter.AddVariant(varName, v)
+
+                    Dim lclbuf As New StringBuilder()
+                    ReplaseQuery(templateStr, New TokenStream(tokens), parameter, lclbuf)
+                    buffer.Append(lclbuf)
+
+                    parameter.RemoveVariant(varName)
+                Next
+            Catch ex As Exception
+                Throw New ReportsException($"foreachの構文を間違えています。{vbCrLf}{templateStr}:{tempPos}", ex)
             End Try
         End Sub
 
