@@ -6,6 +6,7 @@ Imports Microsoft.Extensions.Logging
 Imports ZoppaReports.Tokens
 Imports ZoppaReports.Lexical
 Imports ZoppaReports.Express
+Imports ZoppaReports.Parser
 
 Partial Module ZoppaReports
 

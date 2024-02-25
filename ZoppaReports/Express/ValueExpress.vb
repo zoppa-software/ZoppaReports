@@ -42,7 +42,7 @@ Namespace Express
         ''' <param name="logger">ロガー。</param>
         ''' <param name="nestLv">ネストレベル。</param>
         Public Sub Logging(logger As ILogger, nestLv As Integer) Implements IExpression.Logging
-            logger?.LogTrace(New String(" "c, nestLv * 2) & Me.ToString())
+            logger?.LogTrace("{}", New String(" "c, nestLv * 2) & Me.ToString())
         End Sub
 
         ''' <summary>文字列条件を取得します。</summary>

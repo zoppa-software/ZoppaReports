@@ -14,14 +14,6 @@ Namespace Tokens
         ''' <summary>トークン位置。</summary>
         Public ReadOnly Position As Integer
 
-        '''' <summary>格納されている値を取得する。</summary>
-        '''' <returns>格納値。</returns>
-        'Public ReadOnly Property Contents As Object
-        '    Get
-        '        Return Me.mToken.Contents
-        '    End Get
-        'End Property
-
         ''' <summary>トークン型を取得する。</summary>
         ''' <returns>トークン型。</returns>
         Public ReadOnly Property TokenType As Type
@@ -29,30 +21,6 @@ Namespace Tokens
                 Return If(Me.mToken?.TokenType, Nothing)
             End Get
         End Property
-
-        '''' <summary>コントロールトークンならば真を返します。</summary>
-        '''' <returns>コントロールトークンならば真。</returns>
-        'Public ReadOnly Property IsControlToken As Boolean
-        '    Get
-        '        Return TypeOf Me.mToken Is IControlToken
-        '    End Get
-        'End Property
-
-        '''' <summary>トークンが空白文字ならば真を返します。</summary>
-        '''' <returns>トークンが空白文字ならば真。</returns>
-        'Public ReadOnly Property IsWhiteSpace As Boolean
-        '    Get
-        '        Return Me.mToken.IsWhiteSpace
-        '    End Get
-        'End Property
-
-        '''' <summary>トークンが改行文字ならば真を返します。</summary>
-        '''' <returns>トークンが改行文字ならば真。</returns>
-        'Public ReadOnly Property IsCrLf As Boolean
-        '    Get
-        '        Return Me.mToken.IsCrLf
-        '    End Get
-        'End Property
 
         ''' <summary>コンストラクタ。</summary>
         ''' <param name="src">参照するトークン。</param>

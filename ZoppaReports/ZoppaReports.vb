@@ -8,6 +8,8 @@ Imports System.Windows.Documents
 Imports System.Drawing
 Imports System.Drawing.Printing
 Imports ZoppaReports.Designer
+Imports ZoppaReports.Lexical
+Imports ZoppaReports.Parser
 
 ''' <summary>帳票モジュール。</summary>
 Public Module ZoppaReports
@@ -43,12 +45,12 @@ Public Module ZoppaReports
                                Optional parameter As Object = Nothing) As ReportsInformation
         Dim res = ReadReportsInformation(data, parameter)
 
-        Dim rsiz = res.Size
+        Dim rsiz = res.info.Size
         If rsiz.Kind = PaperKind.Custom Then
             printer.DefaultPageSettings.PaperSize = New PaperSize(
                 rsiz.Kind.ToString(),
-                CInt(Math.Round(rsiz.WidthInInc)),
-                CInt(Math.Round(rsiz.HeightInInc))
+                CInt(Math.Round(rsiz.WidthInMM.MmToInch)),
+                CInt(Math.Round(rsiz.HeightInMM.MmToInch))
             )
         Else
             For Each ps As PaperSize In printer.PrinterSettings.PaperSizes
@@ -61,7 +63,7 @@ Public Module ZoppaReports
 
         printer.DefaultPageSettings.Landscape = (rsiz.Orientation = ReportsOrientation.Landscape)
 
-        Dim handler As New PrintHandler(res)
+        Dim handler As New PrintHandler(res.info)
         Try
             AddHandler printer.PrintPage, AddressOf handler.Draw
             printer.Print()
@@ -70,7 +72,7 @@ Public Module ZoppaReports
             AddHandler printer.PrintPage, AddressOf handler.Draw
         End Try
 
-        Return res
+        Return res.info
     End Function
 
     Private NotInheritable Class PrintHandler
@@ -81,12 +83,8 @@ Public Module ZoppaReports
             Me.mInfo = info
         End Sub
 
-        Public Async Sub Draw(sender As Object, e As Printing.PrintPageEventArgs)
-            Await Task.Run(
-            Sub()
-                Me.mInfo.Draw(e.Graphics)
-            End Sub
-        )
+        Public Sub Draw(sender As Object, e As Printing.PrintPageEventArgs)
+            Me.mInfo.Draw(e.Graphics)
         End Sub
 
     End Class
@@ -97,10 +95,19 @@ Public Module ZoppaReports
     ''' <param name="data"></param>
     ''' <param name="parameter"></param>
     ''' <returns></returns>
-    Public Function ReadReportsInformation(data As String, Optional parameter As Object = Nothing) As ReportsInformation
-        ' Replase
+    Public Function ReadReportsInformation(data As String, Optional parameter As Object = Nothing) As (info As ReportsInformation, repdata As String)
+        Dim env As New Environments(parameter)
 
-        Return ReportsInformation.Load(data, parameter)
+        Using scope = _logger.Value?.BeginScope(NameOf(ReadReportsInformation))
+            ' テンプレートをトークンに分割
+            Dim splited = LexicalAnalysis.SplitRepToken(data)
+
+            ' テンプレートを置き換え
+            data = ParserAnalysis.Replase(data, splited, env)
+
+            ' テンプレートを解析
+            Return (ReportsInformation.Load(data), data)
+        End Using
     End Function
 
 End Module

@@ -33,7 +33,7 @@ Namespace Express
         ''' <param name="env">環境値情報。</param>
         ''' <returns>実行結果。</returns>
         Public Function Executes(env As Environments) As IToken Implements IExpression.Executes
-            Dim mtd = env.GetMethod(If(Me.mMethod.Contents?.ToString(), ""))
+            Dim mtd = Environments.GetMethod(If(Me.mMethod.Contents?.ToString(), ""))
             Dim prm = CType(Me.mArgs.Executes(env).Contents, Object())
             Return mtd.Invoke(prm)
         End Function

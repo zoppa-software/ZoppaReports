@@ -37,12 +37,28 @@ Public Class AnalysisTest
         Assert.Equal("A", env.GetValue("name"))
         Assert.Equal("B", env2.GetValue("name"))
 
+        Assert.True(env2.IsDefainedName("name"))
+        Assert.True(env2.IsDefainedName("number"))
+
         env2.AddVariant("arr", New String() {"‚¦", "‚¨"})
         Assert.Equal("‚ ", env.GetValue("arr", 0))
         Assert.Equal("‚¢", env.GetValue("arr", 1))
         Assert.Equal("‚¤", env.GetValue("arr", 2))
         Assert.Equal("‚¦", env2.GetValue("arr", 0))
         Assert.Equal("‚¨", env2.GetValue("arr", 1))
+
+        env2.ClearVariant()
+
+        env2.AddVariant("name2", "C")
+        Assert.Equal("C", env2.GetValue("name2"))
+
+        env2.AddVariant("name2", "D")
+        Assert.Equal("D", env2.GetValue("name2"))
+
+        Assert.True(env2.IsDefainedName("name2"))
+
+        env2.RemoveVariant("name2")
+        Assert.False(env2.IsDefainedName("name2"))
     End Sub
 
     <Fact>
@@ -266,7 +282,7 @@ Public Class AnalysisTest
     End Sub
 
     <Fact>
-    Sub Methidest()
+    Sub FormatMethodTest()
         Using logFacyory = LoggerFactory.Create(
             Sub(config)
                 config.SetMinimumLevel(LogLevel.Trace)
@@ -276,6 +292,21 @@ Public Class AnalysisTest
 
             Dim ans1 = "format('{0:#.##}', val)".Executes(New With {.val = 1.2345678}).Contents
             Assert.Equal("1.23", ans1)
+
+            Dim ans2 = "format('123')".Executes(New With {.val = 1.2345678}).Contents
+            Assert.Equal("123", ans2)
+
+            Assert.Throws(Of ReportsAnalysisException)(
+                Function()
+                    Return "format()".Executes().Contents
+                End Function
+            )
+
+            Assert.Throws(Of ReportsAnalysisException)(
+                Function()
+                    Return "unknown()".Executes().Contents
+                End Function
+            )
         End Using
     End Sub
 

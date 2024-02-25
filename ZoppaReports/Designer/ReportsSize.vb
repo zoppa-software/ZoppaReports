@@ -79,22 +79,22 @@ Namespace Designer
         ''' <summary>ページ幅を取得する。</summary>
         Public ReadOnly Property WidthInMM As Double
 
-        ''' <summary>ページ幅を取得する（インチ単位）</summary>
-        Public ReadOnly Property WidthInInc As Double
-            Get
-                Return (WidthInMM / 0.254)
-            End Get
-        End Property
+        '''' <summary>ページ幅を取得する（インチ単位）</summary>
+        'Public ReadOnly Property WidthInInc As Double
+        '    Get
+        '        Return (WidthInMM / 0.254)
+        '    End Get
+        'End Property
 
         ''' <summary>ページ高さを取得する。</summary>
         Public ReadOnly Property HeightInMM As Double
 
-        ''' <summary>ページ高さを取得する。</summary>
-        Public ReadOnly Property HeightInInc As Double
-            Get
-                Return (HeightInMM / 0.254)
-            End Get
-        End Property
+        '''' <summary>ページ高さを取得する。</summary>
+        'Public ReadOnly Property HeightInInc As Double
+        '    Get
+        '        Return (HeightInMM / 0.254)
+        '    End Get
+        'End Property
 
         ''' <summary>ページ向きを取得する（インチ単位）</summary>
         Public ReadOnly Property Orientation As ReportsOrientation = ReportsOrientation.Portrait
@@ -137,11 +137,7 @@ Namespace Designer
         ''' <param name="size">サイズ。</param>
         ''' <returns>文字列。</returns>
         Public Shared Widening Operator CType(size As ReportsSize) As String
-            If size.Kind = PaperKind.Custom Then
-                Return $"custom,{size.WidthInMM},{size.HeightInMM},{size.Orientation}"
-            Else
-                Return size.Kind.ToString()
-            End If
+            Return size.ToString()
         End Operator
 
         ''' <summary>文字列からPageOrientationに変換する</summary>
@@ -155,6 +151,16 @@ Namespace Designer
                 Return Search(inp)
             End If
         End Operator
+
+        ''' <summary>インスタンスの文字列表現を取得する。</summary>
+        ''' <returns>文字列表現。</returns>
+        Public Overrides Function ToString() As String
+            If Me.Kind = PaperKind.Custom Then
+                Return $"custom,{Me.WidthInMM},{Me.HeightInMM},{Me.Orientation}"
+            Else
+                Return Me.Kind.ToString()
+            End If
+        End Function
 
     End Class
 

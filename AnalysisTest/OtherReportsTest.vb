@@ -29,6 +29,11 @@ Public Class OtherReportsTest
         Dim a2 = (ReportsOrientation.Landscape <> ReportsOrientation.Portrait)
         Assert.True(a2)
 
+        Dim a21 = ReportsOrientation.Landscape.Equals(ReportsOrientation.Landscape)
+        Assert.True(a21)
+
+        Dim hc = ReportsOrientation.Landscape.GetHashCode()
+
         Assert.Throws(Of InvalidCastException)(Function() CType("xxx", ReportsOrientation))
     End Sub
 

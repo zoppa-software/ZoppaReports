@@ -78,6 +78,12 @@ Public NotInheritable Class Environments
         End If
     End Sub
 
+    ''' <summary>ローカル変数を削除する。</summary>
+    ''' <param name="name">変数名。</param>
+    Public Sub RemoveVariant(name As String)
+        Me.mVariants.Remove(name)
+    End Sub
+
     ''' <summary>指定した名称のプロパティから値を取得します。</summary>
     ''' <param name="name">プロパティ名。</param>
     ''' <returns>値。</returns>
@@ -129,7 +135,7 @@ Public NotInheritable Class Environments
     ''' <summary>指定した名称のメソッドを取得します。</summary>
     ''' <param name="name">メソッド名。</param>
     ''' <param name="value">値。</param>
-    Public Function GetMethod(name As String) As Func(Of Object(), IToken)
+    Public Shared Function GetMethod(name As String) As Func(Of Object(), IToken)
         Select Case name.ToLower()
             Case "format"
                 Return Function(args As Object())
@@ -144,10 +150,6 @@ Public NotInheritable Class Environments
         End Select
         Throw New ReportsAnalysisException("有効な関数を指定していません。")
     End Function
-
-    ''' <summary>指定した名称のプロパティに値を設定します。</summary>
-    ''' <param name="name">プロパティ名。</param>
-    ''' <param name="value">値。</param>
 
     ''' <summary>環境値をコピーします。</summary>
     ''' <returns>コピーされた環境値。</returns>
@@ -179,6 +181,21 @@ Public NotInheritable Class Environments
         Else
             Return If(value?.ToString(), "[null]")
         End If
+    End Function
+
+    ''' <summary>指定した名称が定義されているかを取得します。</summary>
+    ''' <param name="name">名称。</param>
+    ''' <returns>真値の場合、定義されている。</returns>
+    Public Function IsDefainedName(name As String) As Boolean
+        If Me.mPropDic.ContainsKey(name) Then
+            Return True
+        End If
+
+        If Me.mVariants.ContainsKey(name) Then
+            Return True
+        End If
+
+        Return False
     End Function
 
 End Class

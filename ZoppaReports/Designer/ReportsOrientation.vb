@@ -77,6 +77,12 @@ Namespace Designer
             Return Me.mValue.GetHashCode()
         End Function
 
+        ''' <summary>インスタンスの文字列表現を取得する。</summary>
+        ''' <returns>文字列表現。</returns>
+        Public Overrides Function ToString() As String
+            Return Me.mValue
+        End Function
+
         ''' <summary>等価演算子のオーバーロード。</summary>
         ''' <param name="lf">左辺。</param>
         ''' <param name="rt">右辺。</param>
