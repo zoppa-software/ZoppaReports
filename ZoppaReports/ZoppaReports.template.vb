@@ -70,12 +70,12 @@ Partial Public Module ZoppaReports
         End If
     End Function
 
-    Friend Sub ReadElements(parent As IReportsElements, nodes As Xml.XmlNodeList)
-        For Each nd As Xml.XmlNode In nodes
-            Select Case nd.Name
-                Case "label"
-            End Select
-        Next
-    End Sub
+    'Friend Sub ReadElements(parent As IReportsElements, nodes As Xml.XmlNodeList)
+    '    For Each nd As Xml.XmlNode In nodes
+    '        Select Case nd.Name
+    '            Case "label"
+    '        End Select
+    '    Next
+    'End Sub
 
 End Module

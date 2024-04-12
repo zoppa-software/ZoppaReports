@@ -20,9 +20,6 @@ Namespace Lexical
             ''' <summary>コードトークン。</summary>
             CODE_TKN
 
-            ''' <summary>置き換えトークン。</summary>
-            REPLASE_TKN
-
         End Enum
 
         ''' <summary>文字列をトークン解析します。</summary>
@@ -52,23 +49,10 @@ Namespace Lexical
                                 Throw New ReportsAnalysisException("}に対応する{を入力してください")
                             Case TKN_TYPE.CODE_TKN
                                 tokens.AddIfNull(buffer.CreateCodeToken(), pos)
-                            Case TKN_TYPE.REPLASE_TKN
-                                tokens.AddIfNull(buffer.CreateReplaseToken(), pos)
                         End Select
                         pos = reader.CurrentPosition
                         reader.Move(1)
                         tknType = TKN_TYPE.QUERY_TKN
-
-                    Case "#"c
-                        If reader.NestChar(1) = "{"c Then
-                            tokens.AddRange(buffer.CreateQueryTokens(pos))
-                            pos = reader.CurrentPosition
-                            reader.Move(2)
-                            tknType = TKN_TYPE.REPLASE_TKN
-                        Else
-                            buffer.Append(c)
-                            reader.Move(1)
-                        End If
 
                     Case "\"c
                         If reader.NestChar(1) = "{"c OrElse reader.NestChar(1) = "}"c Then
@@ -91,8 +75,6 @@ Namespace Lexical
                     tokens.AddRange(buffer.CreateQueryTokens(pos))
                 Case TKN_TYPE.CODE_TKN
                     Throw New ReportsAnalysisException("コードトークンが閉じられていません")
-                Case TKN_TYPE.REPLASE_TKN
-                    Throw New ReportsAnalysisException("置き換えトークンが閉じられていません")
             End Select
 
             Return tokens
@@ -139,41 +121,45 @@ Namespace Lexical
         <Extension>
         Private Function CreateCodeToken(buffer As StringBuilder) As IToken
             Dim codeStr = buffer.ToString().Trim()
-            buffer.Clear()
             Dim lowStr = If(codeStr.Length > 10, codeStr.Substring(0, 10), codeStr).ToLower()
 
+            Dim res As IToken = Nothing
             If lowStr.StartsWith("if ") Then
-                Return New IfToken(SplitToken(codeStr.Substring(3)))
+                res = New IfToken(SplitToken(codeStr.Substring(3)))
             ElseIf lowStr.StartsWith("elseif ") Then
-                Return New ElseIfToken(SplitToken(codeStr.Substring(7)))
+                res = New ElseIfToken(SplitToken(codeStr.Substring(7)))
             ElseIf lowStr.StartsWith("else if ") Then
-                Return New ElseIfToken(SplitToken(codeStr.Substring(8)))
+                res = New ElseIfToken(SplitToken(codeStr.Substring(8)))
             ElseIf lowStr.StartsWith("else") Then
-                Return ElseToken.Value
+                res = ElseToken.Value
             ElseIf lowStr.StartsWith("end if") Then
-                Return EndIfToken.Value
+                res = EndIfToken.Value
             ElseIf lowStr.StartsWith("/if") Then
-                Return EndIfToken.Value
+                res = EndIfToken.Value
             ElseIf lowStr.StartsWith("for each ") Then
-                Return New ForEachToken(SplitToken(codeStr.Substring(9)))
+                res = New ForEachToken(SplitToken(codeStr.Substring(9)))
             ElseIf lowStr.StartsWith("foreach ") Then
-                Return New ForEachToken(SplitToken(codeStr.Substring(8)))
+                res = New ForEachToken(SplitToken(codeStr.Substring(8)))
             ElseIf lowStr.StartsWith("for ") Then
-                Return New ForToken(SplitToken(codeStr.Substring(4)))
+                res = New ForToken(SplitToken(codeStr.Substring(4)))
             ElseIf lowStr.StartsWith("end for") Then
-                Return EndForToken.Value
+                res = EndForToken.Value
             ElseIf lowStr.StartsWith("/for") Then
-                Return EndForToken.Value
+                res = EndForToken.Value
             ElseIf lowStr.StartsWith("select ") Then
-                Return New SelectToken(SplitToken(codeStr.Substring(7)))
+                res = New SelectToken(SplitToken(codeStr.Substring(7)))
             ElseIf lowStr.StartsWith("case ") Then
-                Return New CaseToken(SplitToken(codeStr.Substring(5)))
+                res = New CaseToken(SplitToken(codeStr.Substring(5)))
             ElseIf lowStr.StartsWith("end select") Then
-                Return EndSelectToken.Value
+                res = EndSelectToken.Value
             ElseIf lowStr.StartsWith("/select") Then
-                Return EndSelectToken.Value
+                res = EndSelectToken.Value
+            Else
+                res = buffer.CreateReplaseToken()
             End If
-            Return Nothing
+
+            buffer.Clear()
+            Return res
         End Function
 
     End Module

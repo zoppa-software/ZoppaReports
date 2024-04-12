@@ -8,7 +8,7 @@ Namespace Tokens
     Public NotInheritable Class ArrayToken
         Implements IToken
 
-        ' 文字列
+        ' 値
         Private ReadOnly mValue As IToken()
 
         ''' <summary>格納されている値を取得する。</summary>

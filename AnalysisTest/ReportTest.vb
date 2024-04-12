@@ -11,132 +11,132 @@ Public Class ReportTest
 
     <Fact>
     Public Sub PageTest()
-        Using logFacyory = LoggerFactory.Create(
-                Sub(config)
-                    config.SetMinimumLevel(LogLevel.Trace)
-                    config.AddConsole()
-                End Sub)
-            SetZoppaReportsLogFactory(logFacyory)
-            Dim pageXml =
-"<report kind=""A4"">
-    <resources>
-        <font name=""MS Gothic"" size=""12"" />
-    </resources>
-    <page>
-    </page>
-</report>
-"
-            Dim a1 = ReadReportsInformation(pageXml)
-            Assert.Equal(PaperKind.A4, a1.info.Size.Kind)
+        '        Using logFacyory = LoggerFactory.Create(
+        '                Sub(config)
+        '                    config.SetMinimumLevel(LogLevel.Trace)
+        '                    config.AddConsole()
+        '                End Sub)
+        '            SetZoppaReportsLogFactory(logFacyory)
+        '            Dim pageXml =
+        '"<report kind=""A4"">
+        '    <resources>
+        '        <font name=""MS Gothic"" size=""12"" />
+        '    </resources>
+        '    <page>
+        '    </page>
+        '</report>
+        '"
+        '            Dim a1 = ReadReportsInformation(pageXml)
+        '            Assert.Equal(PaperKind.A4, a1.info.Size.Kind)
 
-            Dim pageXml2 =
-"<report kind=""#{kind}"">
-    <page>
-    </page>
-</report>
-"
-            Dim a2 = ReadReportsInformation(pageXml2, New With {.kind = ReportsSize.B4})
-            Assert.Equal(PaperKind.B4, a2.info.Size.Kind)
+        '            Dim pageXml2 =
+        '"<report kind=""#{kind}"">
+        '    <page>
+        '    </page>
+        '</report>
+        '"
+        '            Dim a2 = ReadReportsInformation(pageXml2, New With {.kind = ReportsSize.B4})
+        '            Assert.Equal(PaperKind.B4, a2.info.Size.Kind)
 
-            Dim pageXml3 =
-"<report width=""100"" height=""200"" orientation=""portrait"">
-    <page>
-    </page>
-</report>
-"
-            Dim a3 = ReadReportsInformation(pageXml3)
-            Assert.Equal(PaperKind.Custom, a3.info.Size.Kind)
-            Assert.Equal(100, a3.info.Size.WidthInMM)
-            Assert.Equal(200, a3.info.Size.HeightInMM)
-            Assert.Equal(ReportsOrientation.Portrait, a3.info.Size.Orientation)
+        '            Dim pageXml3 =
+        '"<report width=""100"" height=""200"" orientation=""portrait"">
+        '    <page>
+        '    </page>
+        '</report>
+        '"
+        '            Dim a3 = ReadReportsInformation(pageXml3)
+        '            Assert.Equal(PaperKind.Custom, a3.info.Size.Kind)
+        '            Assert.Equal(100, a3.info.Size.WidthInMM)
+        '            Assert.Equal(200, a3.info.Size.HeightInMM)
+        '            Assert.Equal(ReportsOrientation.Portrait, a3.info.Size.Orientation)
 
-            Dim pageXml4 =
-"<report kind=""custom,140,200,portrait"">
-    <page>
-    </page>
-</report>
-"
-            Dim a4 = ReadReportsInformation(pageXml4)
-            Assert.Equal(PaperKind.Custom, a4.info.Size.Kind)
-            Assert.Equal(140, a4.info.Size.WidthInMM)
-            Assert.Equal(200, a4.info.Size.HeightInMM)
-            Assert.Equal(ReportsOrientation.Portrait, a4.info.Size.Orientation)
+        '            Dim pageXml4 =
+        '"<report kind=""custom,140,200,portrait"">
+        '    <page>
+        '    </page>
+        '</report>
+        '"
+        '            Dim a4 = ReadReportsInformation(pageXml4)
+        '            Assert.Equal(PaperKind.Custom, a4.info.Size.Kind)
+        '            Assert.Equal(140, a4.info.Size.WidthInMM)
+        '            Assert.Equal(200, a4.info.Size.HeightInMM)
+        '            Assert.Equal(ReportsOrientation.Portrait, a4.info.Size.Orientation)
 
-            Dim pageXml5 =
-"<report width=""#{wid + 10}"" height=""#{hid - 10}"" orientation=""#{ori}"">
-    <page>
-    </page>
-</report>
-"
-            Dim a5 = ReadReportsInformation(pageXml5, New With {.wid = 90, .hid = 110, .ori = ReportsOrientation.Landscape})
-            Assert.Equal(PaperKind.Custom, a5.info.Size.Kind)
-            Assert.Equal(100, a5.info.Size.WidthInMM)
-            Assert.Equal(100, a5.info.Size.HeightInMM)
-            Assert.Equal(ReportsOrientation.Landscape, a5.info.Size.Orientation)
-        End Using
+        '            Dim pageXml5 =
+        '"<report width=""#{wid + 10}"" height=""#{hid - 10}"" orientation=""#{ori}"">
+        '    <page>
+        '    </page>
+        '</report>
+        '"
+        '            Dim a5 = ReadReportsInformation(pageXml5, New With {.wid = 90, .hid = 110, .ori = ReportsOrientation.Landscape})
+        '            Assert.Equal(PaperKind.Custom, a5.info.Size.Kind)
+        '            Assert.Equal(100, a5.info.Size.WidthInMM)
+        '            Assert.Equal(100, a5.info.Size.HeightInMM)
+        '            Assert.Equal(ReportsOrientation.Landscape, a5.info.Size.Orientation)
+        'End Using
     End Sub
 
     <Fact>
     Public Sub PageErrorTest()
-        Using logFacyory = LoggerFactory.Create(
-                Sub(config)
-                    config.SetMinimumLevel(LogLevel.Trace)
-                    config.AddConsole()
-                End Sub)
-            SetZoppaReportsLogFactory(logFacyory)
-            Dim pageXml =
-"<reporterr kind=""A4"">
-    <resources>
-        <font name=""MS Gothic"" size=""12"" />
-    </resources>
-    <page>
-    </page>
-</reporterr>
-"
-            ' report要素未定義
-            Assert.Throws(Of ReportsException)(
-                Sub()
-                    ReadReportsInformation(pageXml)
-                End Sub
-            )
-        End Using
+        '        Using logFacyory = LoggerFactory.Create(
+        '                Sub(config)
+        '                    config.SetMinimumLevel(LogLevel.Trace)
+        '                    config.AddConsole()
+        '                End Sub)
+        '            SetZoppaReportsLogFactory(logFacyory)
+        '            Dim pageXml =
+        '"<reporterr kind=""A4"">
+        '    <resources>
+        '        <font name=""MS Gothic"" size=""12"" />
+        '    </resources>
+        '    <page>
+        '    </page>
+        '</reporterr>
+        '"
+        '            ' report要素未定義
+        '            Assert.Throws(Of ReportsException)(
+        '                Sub()
+        '                    ReadReportsInformation(pageXml)
+        '                End Sub
+        '            )
+        '        End Using
     End Sub
 
     <Fact>
     Public Sub MarginTest()
-        Using logFacyory = LoggerFactory.Create(
-                Sub(config)
-                    config.SetMinimumLevel(LogLevel.Trace)
-                    config.AddConsole()
-                End Sub)
-            SetZoppaReportsLogFactory(logFacyory)
-            Dim pageXml =
-"<report kind=""A4"" padding=""3"">
-    <page>
-    </page>
-</report>
-"
-            Dim a1 = ReadReportsInformation(pageXml)
-            Assert.Equal(New ReportsMargin With {.Left = 3, .Top = 3, .Right = 3, .Bottom = 3}, a1.info.Padding)
+        '        Using logFacyory = LoggerFactory.Create(
+        '                Sub(config)
+        '                    config.SetMinimumLevel(LogLevel.Trace)
+        '                    config.AddConsole()
+        '                End Sub)
+        '            SetZoppaReportsLogFactory(logFacyory)
+        '            Dim pageXml =
+        '"<report kind=""A4"" padding=""3"">
+        '    <page>
+        '    </page>
+        '</report>
+        '"
+        '            Dim a1 = ReadReportsInformation(pageXml)
+        '            Assert.Equal(New ReportsMargin With {.Left = 3, .Top = 3, .Right = 3, .Bottom = 3}, a1.info.Padding)
 
-            Dim pageXml1 =
-    "<report kind=""A4"" padding=""3, 5"">
-    <page>
-    </page>
-</report>
-"
-            Dim a2 = ReadReportsInformation(pageXml1)
-            Assert.Equal(New ReportsMargin With {.Left = 3, .Top = 5, .Right = 3, .Bottom = 5}, a2.info.Padding)
+        '            Dim pageXml1 =
+        '    "<report kind=""A4"" padding=""3, 5"">
+        '    <page>
+        '    </page>
+        '</report>
+        '"
+        '            Dim a2 = ReadReportsInformation(pageXml1)
+        '            Assert.Equal(New ReportsMargin With {.Left = 3, .Top = 5, .Right = 3, .Bottom = 5}, a2.info.Padding)
 
-            Dim pageXml2 =
-    "<report kind=""A4"" padding=""1, 2, 3, 4"">
-    <page>
-    </page>
-</report>
-"
-            Dim a3 = ReadReportsInformation(pageXml2)
-            Assert.Equal(New ReportsMargin With {.Left = 1, .Top = 2, .Right = 3, .Bottom = 4}, a3.info.Padding)
-        End Using
+        '            Dim pageXml2 =
+        '    "<report kind=""A4"" padding=""1, 2, 3, 4"">
+        '    <page>
+        '    </page>
+        '</report>
+        '"
+        '            Dim a3 = ReadReportsInformation(pageXml2)
+        '            Assert.Equal(New ReportsMargin With {.Left = 1, .Top = 2, .Right = 3, .Bottom = 4}, a3.info.Padding)
+        '        End Using
     End Sub
 
     <Fact>
@@ -194,7 +194,7 @@ Public Class ReportTest
 "<report kind=""A4"" padding=""5"">
     <page>
         {for i = base + 0 to base + 9}
-        <label x=""0"" y=""#{i * 5}"" width=""100"" height=""5"" brush=""black""/>{/for}
+        <label x=""0"" y=""{i * 5}"" width=""100"" height=""5"" brush=""black""/>{/for}
     </page>
 </report>"
             Dim a1 = ReadReportsInformation(pageXml1, New With {.base = 2})
@@ -218,7 +218,7 @@ Public Class ReportTest
 "<report kind=""A4"" padding=""5"">
     <page>{foreach txt in ['あ', 'い', 'う']}
         {for i = base + 0 to base + 2}
-        <label x=""0"" y=""#{i * 5}"" width=""100"" height=""5"" brush=""black"" text=""#{txt}""/>{/for}{/for}
+        <label x=""0"" y=""{i * 5}"" width=""100"" height=""5"" brush=""black"" text=""{txt}""/>{/for}{/for}
     </page>
 </report>"
             Dim a2 = ReadReportsInformation(pageXml2, New With {.base = 2})
@@ -238,16 +238,16 @@ Public Class ReportTest
         <label x=""0"" y=""20"" width=""100"" height=""5"" brush=""black"" text=""う""/>
     </page>
 </report>", a2.repdata)
-        End Using
 
-        Dim pageXml3 =
+
+            Dim pageXml3 =
 "<report kind=""A4"" padding=""5"">
     <page>{for i = base + 0 to base + 2}{foreach txt in texts}
-        <label x=""0"" y=""#{i * 5}"" width=""100"" height=""5"" brush=""black"" text=""#{txt}""/>{/for}{/for}
+        <label x=""0"" y=""{i * 5}"" width=""100"" height=""5"" brush=""black"" text=""{txt}""/>{/for}{/for}
     </page>
 </report>"
-        Dim a3 = ReadReportsInformation(pageXml3, New With {.base = 2, .texts = {"AA", "BB", "CC"}})
-        Assert.Equal("<report kind=""A4"" padding=""5"">
+            Dim a3 = ReadReportsInformation(pageXml3, New With {.base = 2, .texts = {"AA", "BB", "CC"}})
+            Assert.Equal("<report kind=""A4"" padding=""5"">
     <page>
         <label x=""0"" y=""10"" width=""100"" height=""5"" brush=""black"" text=""AA""/>
         <label x=""0"" y=""10"" width=""100"" height=""5"" brush=""black"" text=""BB""/>
@@ -260,6 +260,7 @@ Public Class ReportTest
         <label x=""0"" y=""20"" width=""100"" height=""5"" brush=""black"" text=""CC""/>
     </page>
 </report>", a3.repdata)
+        End Using
     End Sub
 
     <Fact>

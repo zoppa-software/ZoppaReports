@@ -19,7 +19,7 @@ Namespace Parser
         Friend Function Replase(templateStr As String,
                                 tokens As List(Of TokenPosition),
                                 parameter As Environments) As String
-            ' SQLの置き換えを実施
+            ' 置き換えを実施
             Dim buffer As New StringBuilder()
             ReplaseQuery(templateStr, New TokenStream(tokens), parameter, buffer)
 
@@ -59,9 +59,6 @@ Namespace Parser
 
                     Case GetType(ElseIfToken), GetType(ElseToken), GetType(EndIfToken)
                         Throw New ReportsAnalysisException($"ifが開始されていません。{vbCrLf}{templateStr}:{tkn.Position}")
-
-                    Case GetType(EndIfToken)
-                        Throw New ReportsAnalysisException($"Ifが開始されていません。{vbCrLf}{templateStr}:{tkn.Position}")
 
                     Case GetType(ForToken)
                         reader.Move(1)
@@ -327,14 +324,14 @@ Namespace Parser
             End If
             ts.Move(1)
 
-            ' toトークンを取得
+            ' in、:トークンを取得
             Dim toToken = ts.Current.GetToken(Of IdentToken)()
             If toToken Is Nothing OrElse toToken.ToString().ToLower() <> "in" Then
                 Throw New ReportsAnalysisException($"foreachの構文を間違えています。{vbCrLf}{templateStr}:{tempPos}")
             End If
             ts.Move(1)
 
-            ' 終了値を取得
+            ' コレクションを取得
             Dim collectionToken = mMultiParser.Parser(ts)
             Dim collection = TryCast(collectionToken.Executes(parameter).Contents, IEnumerable)
             If collection Is Nothing Then
