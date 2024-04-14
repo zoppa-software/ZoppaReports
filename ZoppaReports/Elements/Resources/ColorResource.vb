@@ -8,10 +8,10 @@ Namespace Resources
 
     ''' <summary>色リソース。</summary>
     Public NotInheritable Class ColorResource
-        Implements IResources
+        Implements IReportsResources
 
         ' リソース名
-        Private mName As String
+        Private ReadOnly mName As String
 
         ' 色
         Private mColor As Color = Color.Black
@@ -20,7 +20,7 @@ Namespace Resources
 
         ''' <summary>リソース名を取得します。</summary>
         ''' <returns>リソース名、</returns>
-        Public ReadOnly Property Name As String Implements IResources.Name
+        Public ReadOnly Property Name As String Implements IReportsResources.Name
             Get
                 Return Me.mName
             End Get
@@ -28,7 +28,7 @@ Namespace Resources
 
         ''' <summary>リソースを取得します。</summary>
         ''' <returns>リソース。</returns>
-        Private Function Contents(Of T As {Class})() As T Implements IResources.Contents
+        Private Function Contents(Of T As {Class})() As T Implements IReportsResources.Contents
             Dim res = TryCast(Me.mColor, T)
             If res IsNot Nothing Then
                 Return res
@@ -58,15 +58,20 @@ Namespace Resources
             ' 空実装
         End Sub
 
-        ''' <summary>リソースプロパティを設定します。</summary>
-        ''' <param name="name">リソース名。</param>
+        ''' <summary>プロパティを設定します。</summary>
+        ''' <param name="name">プロパティ名。</param>
         ''' <param name="value">プロパティ値。</param>
-        Public Sub SetProperty(name As String, value As Object) Implements IResources.SetProperty
+        ''' <returns>追加できたら真。</returns>
+        Public Function SetProperty(name As String, value As Object) As Boolean Implements IReportsResources.SetProperty
             Select Case name.ToLower()
                 Case NameOf(Me.Color).ToLower(), "value"
                     Me.mColor = ConvertColor(value)
+                    Return True
+
+                Case Else
+                    Return False
             End Select
-        End Sub
+        End Function
 
     End Class
 

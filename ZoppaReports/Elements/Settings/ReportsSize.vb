@@ -2,17 +2,25 @@
 Option Explicit On
 
 Imports System.Drawing.Printing
-Imports System.Windows.Controls
 
-Namespace Designer
+Namespace Settings
 
     ''' <summary>帳票サイズ。</summary>
     Public NotInheritable Class ReportsSize
 
+        ' 幅
+        Private mWidth As ReportsCoord = ReportsCoord.Zero
+
+        ' 高さ
+        Private mHeight As ReportsCoord = ReportsCoord.Zero
+
 #Region "size properties"
 
+        ''' <summary>ページ種類を取得する。</summary>
+        Public ReadOnly Property Kind As PaperKind
+
         ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyA2() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.A2, 420, 594, ReportsOrientation.Portrait))
+        Private Shared ReadOnly Property LazyA2() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.A2, 420, 594))
 
         ''' <summary>A2サイズを取得する。</summary>
         Public Shared ReadOnly Property A2 As ReportsSize
@@ -22,7 +30,7 @@ Namespace Designer
         End Property
 
         ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyA3() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.A3, 297, 420, ReportsOrientation.Portrait))
+        Private Shared ReadOnly Property LazyA3() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.A3, 297, 420))
 
         ''' <summary>A3サイズを取得する。</summary>
         Public Shared ReadOnly Property A3 As ReportsSize
@@ -32,7 +40,7 @@ Namespace Designer
         End Property
 
         ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyA4() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.A4, 210, 297, ReportsOrientation.Portrait))
+        Private Shared ReadOnly Property LazyA4() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.A4, 210, 297))
 
         ''' <summary>A4サイズを取得する。</summary>
         Public Shared ReadOnly Property A4 As ReportsSize
@@ -42,7 +50,7 @@ Namespace Designer
         End Property
 
         ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyA5() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.A5, 148, 210, ReportsOrientation.Portrait))
+        Private Shared ReadOnly Property LazyA5() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.A5, 148, 210))
 
         ''' <summary>A5サイズを取得する。</summary>
         Public Shared ReadOnly Property A5 As ReportsSize
@@ -52,7 +60,7 @@ Namespace Designer
         End Property
 
         ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyB4() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.B4, 257, 364, ReportsOrientation.Portrait))
+        Private Shared ReadOnly Property LazyB4() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.B4, 257, 364))
 
         ''' <summary>B4サイズを取得する。</summary>
         Public Shared ReadOnly Property B4 As ReportsSize
@@ -62,7 +70,7 @@ Namespace Designer
         End Property
 
         ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyB5() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.B5, 182, 257, ReportsOrientation.Portrait))
+        Private Shared ReadOnly Property LazyB5() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.B5, 182, 257))
 
         ''' <summary>B5サイズを取得する。</summary>
         Public Shared ReadOnly Property B5 As ReportsSize
@@ -71,44 +79,30 @@ Namespace Designer
             End Get
         End Property
 
+        ''' <summary>幅を取得する。</summary>
+        Public ReadOnly Property Width As ReportsCoord
+            Get
+                Return Me.mWidth
+            End Get
+        End Property
+
+        ''' <summary>高さを取得する。</summary>
+        Public ReadOnly Property Height As ReportsCoord
+            Get
+                Return Me.mHeight
+            End Get
+        End Property
+
 #End Region
-
-        ''' <summary>ページ種類を取得する。</summary>
-        Public ReadOnly Property Kind As PaperKind
-
-        ''' <summary>ページ幅を取得する。</summary>
-        Public ReadOnly Property WidthInMM As Double
-
-        '''' <summary>ページ幅を取得する（インチ単位）</summary>
-        'Public ReadOnly Property WidthInInc As Double
-        '    Get
-        '        Return (WidthInMM / 0.254)
-        '    End Get
-        'End Property
-
-        ''' <summary>ページ高さを取得する。</summary>
-        Public ReadOnly Property HeightInMM As Double
-
-        '''' <summary>ページ高さを取得する。</summary>
-        'Public ReadOnly Property HeightInInc As Double
-        '    Get
-        '        Return (HeightInMM / 0.254)
-        '    End Get
-        'End Property
-
-        ''' <summary>ページ向きを取得する（インチ単位）</summary>
-        Public ReadOnly Property Orientation As ReportsOrientation = ReportsOrientation.Portrait
 
         ''' <summary>コンストラクタ。</summary>
         ''' <param name="kd">種類。</param>
         ''' <param name="wmm">幅。</param>
         ''' <param name="hmm">高さ。</param>
-        ''' <param name="ort">向き。</param>
-        Friend Sub New(kd As PaperKind, wmm As Double, hmm As Double, ort As ReportsOrientation)
+        Private Sub New(kd As PaperKind, wmm As Double, hmm As Double)
             Me.Kind = kd
-            Me.WidthInMM = wmm
-            Me.HeightInMM = hmm
-            Me.Orientation = ort
+            Me.mWidth = ReportsCoord.Create(wmm, ReportsCoord.Unit.Millimeter)
+            Me.mHeight = ReportsCoord.Create(hmm, ReportsCoord.Unit.Millimeter)
         End Sub
 
         ''' <summary>ページサイズを検索する。</summary>
@@ -146,7 +140,7 @@ Namespace Designer
         Public Shared Widening Operator CType(inp As String) As ReportsSize
             If inp.StartsWith("custom") Then
                 Dim prms = inp.Split(","c).Select(Of String)(Function(s) s.Trim()).ToArray()
-                Return New ReportsSize(PaperKind.Custom, Convert.ToDouble(prms(1)), Convert.ToDouble(prms(2)), CTypeDynamic(Of ReportsOrientation)(prms(3)))
+                Return New ReportsSize(PaperKind.Custom, CType(prms(1), ReportsCoord).Millimeter, CType(prms(2), ReportsCoord).Millimeter)
             Else
                 Return Search(inp)
             End If
@@ -156,7 +150,7 @@ Namespace Designer
         ''' <returns>文字列表現。</returns>
         Public Overrides Function ToString() As String
             If Me.Kind = PaperKind.Custom Then
-                Return $"custom,{Me.WidthInMM},{Me.HeightInMM},{Me.Orientation}"
+                Return $"custom,{Me.Width},{Me.Height}"
             Else
                 Return Me.Kind.ToString()
             End If

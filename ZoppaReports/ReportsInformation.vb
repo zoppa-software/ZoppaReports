@@ -10,7 +10,7 @@ Imports ZoppaReports.Elements
 
 ''' <summary>レポート情報。</summary>
 Public NotInheritable Class ReportsInformation
-    Implements IReportsElements
+    Implements IReportsElements_old
 
 #Region "properties"
 
@@ -18,14 +18,14 @@ Public NotInheritable Class ReportsInformation
     Public Property Size As ReportsSize = ReportsSize.A4
 
     ''' <summary>子要素リストを取得します。</summary>
-    Public ReadOnly Property Elements As List(Of IReportsElements) = New List(Of IReportsElements)() Implements IReportsElements.Elements
+    Public ReadOnly Property Elements As List(Of IReportsElements_old) = New List(Of IReportsElements_old)() Implements IReportsElements_old.Elements
 
     ''' <summary>パディングを取得または設定します。</summary>
-    Public Property Padding As ReportsMargin = New ReportsMargin Implements IReportsElements.Padding
+    Public Property Padding As ReportsMargin = New ReportsMargin Implements IReportsElements_old.Padding
 
     ''' <summary>マージンを設定、取得します。</summary>
     ''' <returns>マージン情報。</returns>
-    Public Property Margin As ReportsMargin Implements IReportsElements.Margin
+    Public Property Margin As ReportsMargin Implements IReportsElements_old.Margin
         Get
             Return New ReportsMargin()
         End Get
@@ -36,7 +36,7 @@ Public NotInheritable Class ReportsInformation
 
     ''' <summary>左端位置を設定、取得します。</summary>
     ''' <returns>座標。</returns>
-    Public Property LeftMM As Double Implements IReportsElements.LeftMM
+    Public Property LeftMM As Double Implements IReportsElements_old.LeftMM
         Get
             Return 0
         End Get
@@ -47,7 +47,7 @@ Public NotInheritable Class ReportsInformation
 
     ''' <summary>上端位置を設定、取得します。</summary>
     ''' <returns>座標。</returns>
-    Public Property TopMM As Double Implements IReportsElements.TopMM
+    Public Property TopMM As Double Implements IReportsElements_old.TopMM
         Get
             Return 0
         End Get
@@ -58,9 +58,9 @@ Public NotInheritable Class ReportsInformation
 
     ''' <summary>幅を設定、取得します。</summary>
     ''' <returns>座標。</returns>
-    Public Property WidthMM As Double Implements IReportsElements.WidthMM
+    Public Property WidthMM As Double Implements IReportsElements_old.WidthMM
         Get
-            Return If(Me.Size.Orientation = ReportsOrientation.Portrait, Me.Size.WidthInMM, Me.Size.HeightInMM)
+            Return If(Me.Size.Orientation = ReportsOrientation_old.Portrait, Me.Size.WidthInMM, Me.Size.HeightInMM)
         End Get
         Set(value As Double)
             Throw New ReportsException("幅は変更できません")
@@ -69,9 +69,9 @@ Public NotInheritable Class ReportsInformation
 
     ''' <summary>高さを設定、取得します。</summary>
     ''' <returns>座標。</returns>
-    Public Property HeightMM As Double Implements IReportsElements.HeightMM
+    Public Property HeightMM As Double Implements IReportsElements_old.HeightMM
         Get
-            Return If(Me.Size.Orientation = ReportsOrientation.Portrait, Me.Size.HeightInMM, Me.Size.WidthInMM)
+            Return If(Me.Size.Orientation = ReportsOrientation_old.Portrait, Me.Size.HeightInMM, Me.Size.WidthInMM)
         End Get
         Set(value As Double)
             Throw New ReportsException("高さは変更できません")
@@ -113,7 +113,7 @@ Public NotInheritable Class ReportsInformation
         Dim knd = root.Attributes("kind").GetValue(Of ReportsSize)()
         Dim wid = root.Attributes("width").GetValueDouble()
         Dim hig = root.Attributes("height").GetValueDouble()
-        Dim ort = root.Attributes("orientation").GetValue(Of ReportsOrientation)()
+        Dim ort = root.Attributes("orientation").GetValue(Of ReportsOrientation_old)()
 
         ' サイズ情報を取得する
         Dim ovl = If(ort.has, ort.value, knd.value.Orientation)

@@ -51,7 +51,7 @@ Namespace Elements
             Me.mHeight = 0
         End Sub
 
-        Public Sub Calc(parent As IReportsElements)
+        Public Sub Calc(parent As IReportsElements_old)
 
         End Sub
 

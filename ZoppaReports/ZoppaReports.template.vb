@@ -4,38 +4,9 @@ Option Explicit On
 Imports System.Runtime.CompilerServices
 Imports System.Xml
 Imports ZoppaReports.Exceptions
-Imports ZoppaReports.Elements
 
 ''' <summary>帳票モジュール。</summary>
 Partial Public Module ZoppaReports
-
-    ''' <summary>XMLノードの属性より情報を取得する(文字列)</summary>
-    ''' <param name="attr">属税。</param>
-    ''' <returns>情報。</returns>
-    <Extension()>
-    Friend Function GetValueString(attr As XmlAttribute) As (has As Boolean, value As String)
-        If attr IsNot Nothing Then
-            Return (True, attr.Value)
-        Else
-            Return (False, Nothing)
-        End If
-    End Function
-
-    ''' <summary>XMLノードの属性より情報を取得する(Integer)</summary>
-    ''' <param name="attr">属税。</param>
-    ''' <returns>情報。</returns>
-    <Extension()>
-    Friend Function GetValueInteger(attr As XmlAttribute) As (has As Boolean, value As Integer)
-        If attr IsNot Nothing Then
-            Try
-                Return (True, Convert.ToInt32(attr.Value))
-            Catch ex As Exception
-                Throw New ReportsException($"属性値の変換に失敗しました。{attr.Value}", ex)
-            End Try
-        Else
-            Return (False, Nothing)
-        End If
-    End Function
 
     ''' <summary>XMLノードの属性より情報を取得する(Double)</summary>
     ''' <param name="attr">属税。</param>

@@ -8,7 +8,7 @@ Namespace Resources
 
     ''' <summary>フォントリソース。</summary>
     Public NotInheritable Class FontResource
-        Implements IResources
+        Implements IReportsResources
 
         ' リソース名
         Private ReadOnly mName As String
@@ -29,7 +29,7 @@ Namespace Resources
 
         ''' <summary>リソース名を取得します。</summary>
         ''' <returns>リソース名、</returns>
-        Public ReadOnly Property Name As String Implements IResources.Name
+        Public ReadOnly Property Name As String Implements IReportsResources.Name
             Get
                 Return Me.mName
             End Get
@@ -37,7 +37,7 @@ Namespace Resources
 
         ''' <summary>リソースを取得します。</summary>
         ''' <returns>リソース。</returns>
-        Private Function Contents(Of T As {Class})() As T Implements IResources.Contents
+        Private Function Contents(Of T As {Class})() As T Implements IReportsResources.Contents
             If Me.mFont Is Nothing Then
                 Me.mFont = New Font(Me.Family, Me.EmSize, Me.Style)
             End If
@@ -85,30 +85,36 @@ Namespace Resources
             Me.mFont = Nothing
         End Sub
 
-        ''' <summary>リソースプロパティを設定します。</summary>
-        ''' <param name="name">リソース名。</param>
+        ''' <summary>プロパティを設定します。</summary>
+        ''' <param name="name">プロパティ名。</param>
         ''' <param name="value">プロパティ値。</param>
-        Public Sub SetProperty(name As String, value As Object) Implements IResources.SetProperty
+        ''' <returns>追加できたら真。</returns>
+        Public Function SetProperty(name As String, value As Object) As Boolean Implements IReportsResources.SetProperty
             Me.mFont?.Dispose()
             Me.mFont = Nothing
 
             Select Case name.ToLower()
                 Case NameOf(Me.Family).ToLower()
                     Me.mFamily = value.ToString()
+                    Return True
 
                 Case NameOf(Me.EmSize).ToLower()
                     Try
                         Me.mEmSize = Convert.ToSingle(value)
+                        Return True
                     Catch ex As Exception
                         Throw New ReportsAnalysisException($"{NameOf(Me.EmSize)}プロパティに{value.GetType().Name}を設定できません", ex)
                     End Try
 
                 Case NameOf(Me.Style).ToLower()
-                    If Not [Enum].TryParse(Of FontStyle)(value.ToString(), Me.mStyle) Then
+                    If [Enum].TryParse(Of FontStyle)(value.ToString(), True, Me.mStyle) Then
+                        Return True
+                    Else
                         Throw New ReportsAnalysisException($"{NameOf(Me.EmSize)}プロパティに{value.GetType().Name}を設定できません")
                     End If
             End Select
-        End Sub
+            Return False
+        End Function
 
     End Class
 

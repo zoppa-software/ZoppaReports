@@ -4,8 +4,8 @@ Option Explicit On
 Namespace Resources
 
     ''' <summary>リソースインターフェース。</summary>
-    Public Interface IResources
-        Inherits IElement, IDisposable
+    Public Interface IReportsResources
+        Inherits IHasProperties, IDisposable
 
         ''' <summary>リソース名を取得します。</summary>
         ''' <returns>リソース名、</returns>

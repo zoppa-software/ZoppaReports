@@ -3,7 +3,7 @@ Option Explicit On
 
 Imports System.Drawing.Printing
 
-Namespace Designer
+Namespace Settings
 
     ''' <summary>帳票の向き。</summary>
     Public NotInheritable Class ReportsOrientation
@@ -53,7 +53,7 @@ Namespace Designer
         ''' <returns>帳票の向き。</returns>
         Public Shared Widening Operator CType(inp As String) As ReportsOrientation
             For Each ori In New ReportsOrientation() {Portrait, Landscape}
-                If ori.mValue = inp Then
+                If ori.mValue = inp.ToLower() Then
                     Return ori
                 End If
             Next
@@ -106,3 +106,4 @@ Namespace Designer
     End Class
 
 End Namespace
+

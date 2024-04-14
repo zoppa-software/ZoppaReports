@@ -7,6 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Elements\Designer\**" />
+    <EmbeddedResource Remove="Elements\Designer\**" />
+    <None Remove="Elements\Designer\**" />
+    <Page Remove="Elements\Designer\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Elements\IReportsElements_old.vb" />
+    <Compile Remove="Elements\ReportsRect.vb" />
+    <Compile Remove="ReportsInformation.vb" />
+    <Compile Remove="ZoppaReports.template.vb" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.2" />

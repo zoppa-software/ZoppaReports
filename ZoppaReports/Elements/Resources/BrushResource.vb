@@ -8,16 +8,13 @@ Namespace Resources
 
     ''' <summary>ブラシリソース。</summary>
     Public NotInheritable Class BrushResource
-        Implements IResources
+        Implements IReportsResources
 
         ' リソース名
-        Private mName As String
-
-        ' スタイル
-        Private mStyle As String
+        Private ReadOnly mName As String
 
         ' ブラシ
-        Private mBrush As Brush
+        Private mBrush As Brush = Brushes.Black
 
         ' 前景色
         Private mColor As Color = Color.Black
@@ -32,7 +29,7 @@ Namespace Resources
 
         ''' <summary>リソース名を取得します。</summary>
         ''' <returns>リソース名、</returns>
-        Public ReadOnly Property Name As String Implements IResources.Name
+        Public ReadOnly Property Name As String Implements IReportsResources.Name
             Get
                 Return Me.mName
             End Get
@@ -40,7 +37,7 @@ Namespace Resources
 
         ''' <summary>リソースを取得します。</summary>
         ''' <returns>リソース。</returns>
-        Private Function Contents(Of T As {Class})() As T Implements IResources.Contents
+        Private Function Contents(Of T As {Class})() As T Implements IReportsResources.Contents
             If Me.mBrush Is Nothing Then
                 Me.mBrush = If(Me.mHatchStyle Is Nothing,
                     CType(New SolidBrush(Me.mColor), Brush),
@@ -94,29 +91,36 @@ Namespace Resources
             Me.mBrush = Nothing
         End Sub
 
-        ''' <summary>リソースプロパティを設定します。</summary>
-        ''' <param name="name">リソース名。</param>
+        ''' <summary>プロパティを設定します。</summary>
+        ''' <param name="name">プロパティ名。</param>
         ''' <param name="value">プロパティ値。</param>
-        Public Sub SetProperty(name As String, value As Object) Implements IResources.SetProperty
+        ''' <returns>追加できたら真。</returns>
+        Public Function SetProperty(name As String, value As Object) As Boolean Implements IReportsResources.SetProperty
             Me.mBrush?.Dispose()
             Me.mBrush = Nothing
 
             Select Case name.ToLower()
                 Case NameOf(Me.ForeColor).ToLower(), "color"
                     Me.mColor = ConvertColor(value)
+                    Return True
 
                 Case NameOf(Me.BackColor).ToLower()
                     Me.mBkColor = ConvertColor(value)
+                    Return True
 
                 Case NameOf(Me.HatchStyle).ToLower()
                     Dim hBrh As Drawing2D.HatchStyle
-                    If [Enum].TryParse(Of Drawing2D.HatchStyle)(value.ToString(), hBrh) Then
+                    If [Enum].TryParse(Of Drawing2D.HatchStyle)(value.ToString(), True, hBrh) Then
                         Me.mHatchStyle = hBrh
+                        Return True
                     Else
                         Throw New ReportsAnalysisException($"{NameOf(Me.HatchStyle)}プロパティに{value.GetType().Name}を設定できません")
                     End If
+
+                Case Else
+                    Return False
             End Select
-        End Sub
+        End Function
 
     End Class
 

@@ -20,6 +20,9 @@ Namespace Lexical
             ''' <summary>コードトークン。</summary>
             CODE_TKN
 
+            ''' <summary>スキップトークン。</summary>
+            SKIP_TKN
+
         End Enum
 
         ''' <summary>文字列をトークン解析します。</summary>
@@ -49,13 +52,28 @@ Namespace Lexical
                                 Throw New ReportsAnalysisException("}に対応する{を入力してください")
                             Case TKN_TYPE.CODE_TKN
                                 tokens.AddIfNull(buffer.CreateCodeToken(), pos)
+                            Case TKN_TYPE.SKIP_TKN
+                                buffer.Append(c)
                         End Select
                         pos = reader.CurrentPosition
                         reader.Move(1)
                         tknType = TKN_TYPE.QUERY_TKN
 
+                    Case "#"c, "@"c
+                        If reader.NestChar(1) = "{"c OrElse reader.NestChar(1) = "}"c Then
+                            buffer.Append(c)
+                            reader.Move(1)
+                            buffer.Append(reader.Current)
+                            reader.Move(1)
+                            tknType = TKN_TYPE.SKIP_TKN
+                        Else
+                            buffer.Append(c)
+                            reader.Move(1)
+                        End If
+
                     Case "\"c
                         If reader.NestChar(1) = "{"c OrElse reader.NestChar(1) = "}"c Then
+                            buffer.Append(c)
                             reader.Move(1)
                             buffer.Append(reader.Current)
                             reader.Move(1)
@@ -123,7 +141,8 @@ Namespace Lexical
             Dim codeStr = buffer.ToString().Trim()
             Dim lowStr = If(codeStr.Length > 10, codeStr.Substring(0, 10), codeStr).ToLower()
 
-            Dim res As IToken = Nothing
+            Dim res As IToken
+
             If lowStr.StartsWith("if ") Then
                 res = New IfToken(SplitToken(codeStr.Substring(3)))
             ElseIf lowStr.StartsWith("elseif ") Then
