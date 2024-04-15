@@ -1,81 +1,17 @@
 ﻿Option Strict On
 Option Explicit On
 
-Imports Microsoft.Extensions.Logging
-Imports Microsoft.Extensions.DependencyInjection
-Imports System.Runtime.CompilerServices
-Imports System.Windows.Documents
 Imports System.Drawing
 Imports System.Drawing.Printing
+Imports System.Runtime.CompilerServices
+Imports Microsoft.Extensions.Logging
+Imports ZoppaReports.Exceptions
 Imports ZoppaReports.Lexical
 Imports ZoppaReports.Parser
-Imports ZoppaReports.Exceptions
-Imports ZoppaReports.Settings
-Imports System.Runtime.InteropServices
+Imports ZoppaReports.Smalls
 
 ''' <summary>帳票モジュール。</summary>
 Public Module ZoppaReports
-
-    '''' <summary>
-    '''' 
-    '''' </summary>
-    '''' <param name="printer"></param>
-    '''' <param name="filePath"></param>
-    '''' <param name="enc"></param>
-    '''' <param name="parameter"></param>
-    '''' <returns></returns>
-    '<Extension()>
-    'Public Async Function DrawReport_old(printer As PrintDocument,
-    '                                 filePath As IO.FileInfo,
-    '                                 Optional enc As System.Text.Encoding = Nothing,
-    '                                 Optional parameter As Object = Nothing) As Task(Of ReportsInformation)
-    '    Using sr = New IO.StreamReader(filePath.FullName, If(enc, System.Text.Encoding.Default))
-    '        Return DrawReport_old(printer, Await sr.ReadToEndAsync())
-    '    End Using
-    'End Function
-
-    '''' <summary>
-    '''' 
-    '''' </summary>
-    '''' <param name="printer"></param>
-    '''' <param name="data"></param>
-    '''' <param name="parameter"></param>
-    '''' <returns></returns>
-    '<Extension()>
-    'Public Function DrawReport_old(printer As PrintDocument,
-    '                           data As String,
-    '                           Optional parameter As Object = Nothing) As ReportsInformation
-    '    Dim res = ReadReportsInformation(data, parameter)
-
-    '    Dim rsiz = res.info.Size
-    '    If rsiz.Kind = PaperKind.Custom Then
-    '        printer.DefaultPageSettings.PaperSize = New PaperSize(
-    '            rsiz.Kind.ToString(),
-    '            CInt(Math.Round(rsiz.WidthInMM.MmToInch)),
-    '            CInt(Math.Round(rsiz.HeightInMM.MmToInch))
-    '        )
-    '    Else
-    '        For Each ps As PaperSize In printer.PrinterSettings.PaperSizes
-    '            If ps.Kind = rsiz.Kind Then
-    '                printer.DefaultPageSettings.PaperSize = ps
-    '                Exit For
-    '            End If
-    '        Next
-    '    End If
-
-    '    printer.DefaultPageSettings.Landscape = (rsiz.Orientation = ReportsOrientation_old.Landscape)
-
-    '    Dim handler As New PrintHandler(res.info)
-    '    Try
-    '        AddHandler printer.PrintPage, AddressOf handler.Draw
-    '        printer.Print()
-    '    Catch ex As Exception
-    '    Finally
-    '        AddHandler printer.PrintPage, AddressOf handler.Draw
-    '    End Try
-
-    '    Return res.info
-    'End Function
 
     ''' <summary>帳票を描画します。</summary>
     ''' <param name="printer">印刷ドキュメント。</param>
@@ -116,9 +52,13 @@ Public Module ZoppaReports
         End Using
     End Sub
 
+    ''' <summary>印刷ドキュメントの設定を行います。</summary>
+    ''' <param name="printer">印刷ドキュメント。</param>
+    ''' <param name="report">レポート情報。</param>
     Private Sub SettingPrintDocument(printer As PrintDocument, report As IReportsElement)
         Dim repDoc = TryCast(report, ReportsElement)
 
+        ' 用紙設定
         If repDoc.PaperSize.Kind = PaperKind.Custom Then
             printer.DefaultPageSettings.PaperSize = New PaperSize(
                 repDoc.PaperSize.Kind.ToString(),
@@ -134,44 +74,9 @@ Public Module ZoppaReports
             Next
         End If
 
+        ' 用紙向き
         printer.DefaultPageSettings.Landscape = (repDoc.PaperOrientation = ReportsOrientation.Landscape)
     End Sub
-
-    '<Extension()>
-    'Public Function DrawReport_old(printer As PrintDocument,
-    '                           data As String,
-    '                           Optional parameter As Object = Nothing) As ReportsInformation
-    '    Dim res = ReadReportsInformation(data, parameter)
-
-    '    Dim rsiz = res.info.Size
-    '    If rsiz.Kind = PaperKind.Custom Then
-    '        printer.DefaultPageSettings.PaperSize = New PaperSize(
-    '            rsiz.Kind.ToString(),
-    '            CInt(Math.Round(rsiz.WidthInMM.MmToInch)),
-    '            CInt(Math.Round(rsiz.HeightInMM.MmToInch))
-    '        )
-    '    Else
-    '        For Each ps As PaperSize In printer.PrinterSettings.PaperSizes
-    '            If ps.Kind = rsiz.Kind Then
-    '                printer.DefaultPageSettings.PaperSize = ps
-    '                Exit For
-    '            End If
-    '        Next
-    '    End If
-
-    '    printer.DefaultPageSettings.Landscape = (rsiz.Orientation = ReportsOrientation_old.Landscape)
-
-    '    Dim handler As New PrintHandler(res.info)
-    '    Try
-    '        AddHandler printer.PrintPage, AddressOf handler.Draw
-    '        printer.Print()
-    '    Catch ex As Exception
-    '    Finally
-    '        AddHandler printer.PrintPage, AddressOf handler.Draw
-    '    End Try
-
-    '    Return res.info
-    'End Function
 
     ''' <summary>印刷イベントハンドラ。</summary>
     Private NotInheritable Class PrintHandler
@@ -197,7 +102,7 @@ Public Module ZoppaReports
             Using scope = _logger.Value?.BeginScope(NameOf(ZoppaReports))
                 Try
                     Logger.Value?.LogInformation("draw start")
-                    Me.mInfo.Draw(e.Graphics)
+                    Me.mInfo.Draw(e.Graphics, Rectangle.Empty)
                     Logger.Value?.LogInformation("draw end")
 
                 Catch ex As Exception
@@ -207,7 +112,6 @@ Public Module ZoppaReports
                 End Try
             End Using
         End Sub
-
     End Class
 
     ''' <summary>レポート要素をXMLから読み込みます。</summary>

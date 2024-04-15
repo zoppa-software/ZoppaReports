@@ -2,113 +2,119 @@
 Option Explicit On
 
 Imports System.Drawing.Printing
+Imports System.Windows.Controls
 
-Namespace Settings
+Namespace Designer
 
     ''' <summary>帳票サイズ。</summary>
-    Public NotInheritable Class ReportsSize
-
-        ' 幅
-        Private mWidth As ReportsCoord = ReportsCoord.Zero
-
-        ' 高さ
-        Private mHeight As ReportsCoord = ReportsCoord.Zero
+    Public NotInheritable Class ReportsSize_old
 
 #Region "size properties"
 
-        ''' <summary>ページ種類を取得する。</summary>
-        Public ReadOnly Property Kind As PaperKind
-
         ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyA2() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.A2, 420, 594))
+        Private Shared ReadOnly Property LazyA2() As New Lazy(Of ReportsSize_old)(Function() New ReportsSize_old(PaperKind.A2, 420, 594, ReportsOrientation_old.Portrait))
 
         ''' <summary>A2サイズを取得する。</summary>
-        Public Shared ReadOnly Property A2 As ReportsSize
+        Public Shared ReadOnly Property A2 As ReportsSize_old
             Get
                 Return LazyA2.Value
             End Get
         End Property
 
         ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyA3() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.A3, 297, 420))
+        Private Shared ReadOnly Property LazyA3() As New Lazy(Of ReportsSize_old)(Function() New ReportsSize_old(PaperKind.A3, 297, 420, ReportsOrientation_old.Portrait))
 
         ''' <summary>A3サイズを取得する。</summary>
-        Public Shared ReadOnly Property A3 As ReportsSize
+        Public Shared ReadOnly Property A3 As ReportsSize_old
             Get
                 Return LazyA3.Value
             End Get
         End Property
 
         ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyA4() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.A4, 210, 297))
+        Private Shared ReadOnly Property LazyA4() As New Lazy(Of ReportsSize_old)(Function() New ReportsSize_old(PaperKind.A4, 210, 297, ReportsOrientation_old.Portrait))
 
         ''' <summary>A4サイズを取得する。</summary>
-        Public Shared ReadOnly Property A4 As ReportsSize
+        Public Shared ReadOnly Property A4 As ReportsSize_old
             Get
                 Return LazyA4.Value
             End Get
         End Property
 
         ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyA5() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.A5, 148, 210))
+        Private Shared ReadOnly Property LazyA5() As New Lazy(Of ReportsSize_old)(Function() New ReportsSize_old(PaperKind.A5, 148, 210, ReportsOrientation_old.Portrait))
 
         ''' <summary>A5サイズを取得する。</summary>
-        Public Shared ReadOnly Property A5 As ReportsSize
+        Public Shared ReadOnly Property A5 As ReportsSize_old
             Get
                 Return LazyA5.Value
             End Get
         End Property
 
         ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyB4() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.B4, 257, 364))
+        Private Shared ReadOnly Property LazyB4() As New Lazy(Of ReportsSize_old)(Function() New ReportsSize_old(PaperKind.B4, 257, 364, ReportsOrientation_old.Portrait))
 
         ''' <summary>B4サイズを取得する。</summary>
-        Public Shared ReadOnly Property B4 As ReportsSize
+        Public Shared ReadOnly Property B4 As ReportsSize_old
             Get
                 Return LazyB4.Value
             End Get
         End Property
 
         ''' <summary>遅延インスタンス生成プロパティ。</summary>
-        Private Shared ReadOnly Property LazyB5() As New Lazy(Of ReportsSize)(Function() New ReportsSize(PaperKind.B5, 182, 257))
+        Private Shared ReadOnly Property LazyB5() As New Lazy(Of ReportsSize_old)(Function() New ReportsSize_old(PaperKind.B5, 182, 257, ReportsOrientation_old.Portrait))
 
         ''' <summary>B5サイズを取得する。</summary>
-        Public Shared ReadOnly Property B5 As ReportsSize
+        Public Shared ReadOnly Property B5 As ReportsSize_old
             Get
                 Return LazyB5.Value
             End Get
         End Property
 
-        ''' <summary>幅を取得する。</summary>
-        Public ReadOnly Property Width As ReportsCoord
-            Get
-                Return Me.mWidth
-            End Get
-        End Property
-
-        ''' <summary>高さを取得する。</summary>
-        Public ReadOnly Property Height As ReportsCoord
-            Get
-                Return Me.mHeight
-            End Get
-        End Property
-
 #End Region
+
+        ''' <summary>ページ種類を取得する。</summary>
+        Public ReadOnly Property Kind As PaperKind
+
+        ''' <summary>ページ幅を取得する。</summary>
+        Public ReadOnly Property WidthInMM As Double
+
+        '''' <summary>ページ幅を取得する（インチ単位）</summary>
+        'Public ReadOnly Property WidthInInc As Double
+        '    Get
+        '        Return (WidthInMM / 0.254)
+        '    End Get
+        'End Property
+
+        ''' <summary>ページ高さを取得する。</summary>
+        Public ReadOnly Property HeightInMM As Double
+
+        '''' <summary>ページ高さを取得する。</summary>
+        'Public ReadOnly Property HeightInInc As Double
+        '    Get
+        '        Return (HeightInMM / 0.254)
+        '    End Get
+        'End Property
+
+        ''' <summary>ページ向きを取得する（インチ単位）</summary>
+        Public ReadOnly Property Orientation As ReportsOrientation_old = ReportsOrientation_old.Portrait
 
         ''' <summary>コンストラクタ。</summary>
         ''' <param name="kd">種類。</param>
         ''' <param name="wmm">幅。</param>
         ''' <param name="hmm">高さ。</param>
-        Private Sub New(kd As PaperKind, wmm As Double, hmm As Double)
+        ''' <param name="ort">向き。</param>
+        Friend Sub New(kd As PaperKind, wmm As Double, hmm As Double, ort As ReportsOrientation_old)
             Me.Kind = kd
-            Me.mWidth = ReportsCoord.Create(wmm, ReportsCoord.Unit.Millimeter)
-            Me.mHeight = ReportsCoord.Create(hmm, ReportsCoord.Unit.Millimeter)
+            Me.WidthInMM = wmm
+            Me.HeightInMM = hmm
+            Me.Orientation = ort
         End Sub
 
         ''' <summary>ページサイズを検索する。</summary>
         ''' <param name="name">ページ名。</param>
         ''' <returns>ページサイズ。</returns>
-        Friend Shared Function Search(name As String) As ReportsSize
+        Friend Shared Function Search(name As String) As ReportsSize_old
             Select Case name.ToUpper()
                 Case "A2"
                     Return A2
@@ -130,17 +136,17 @@ Namespace Settings
         ''' <summary>文字列に変換する。</summary>
         ''' <param name="size">サイズ。</param>
         ''' <returns>文字列。</returns>
-        Public Shared Widening Operator CType(size As ReportsSize) As String
+        Public Shared Widening Operator CType(size As ReportsSize_old) As String
             Return size.ToString()
         End Operator
 
         ''' <summary>文字列からPageOrientationに変換する</summary>
         ''' <param name="inp">入力文字列。</param>
         ''' <returns>帳票の向き。</returns>
-        Public Shared Widening Operator CType(inp As String) As ReportsSize
+        Public Shared Widening Operator CType(inp As String) As ReportsSize_old
             If inp.StartsWith("custom") Then
                 Dim prms = inp.Split(","c).Select(Of String)(Function(s) s.Trim()).ToArray()
-                Return New ReportsSize(PaperKind.Custom, CType(prms(1), ReportsCoord).Millimeter, CType(prms(2), ReportsCoord).Millimeter)
+                Return New ReportsSize_old(PaperKind.Custom, Convert.ToDouble(prms(1)), Convert.ToDouble(prms(2)), CTypeDynamic(Of ReportsOrientation_old)(prms(3)))
             Else
                 Return Search(inp)
             End If
@@ -150,7 +156,7 @@ Namespace Settings
         ''' <returns>文字列表現。</returns>
         Public Overrides Function ToString() As String
             If Me.Kind = PaperKind.Custom Then
-                Return $"custom,{Me.Width},{Me.Height}"
+                Return $"custom,{Me.WidthInMM},{Me.HeightInMM},{Me.Orientation}"
             Else
                 Return Me.Kind.ToString()
             End If

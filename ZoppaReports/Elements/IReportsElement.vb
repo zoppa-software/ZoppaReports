@@ -3,9 +3,11 @@ Option Explicit On
 
 Imports System.Drawing
 Imports ZoppaReports.Resources
+Imports ZoppaReports.Smalls
 
 ''' <summary>要素インターフェース。</summary>
 Public Interface IReportsElement
+    Inherits IDisposable
 
     ''' <summary>親要素を取得します。</summary>
     ''' <returns>親要素。</returns>
@@ -18,6 +20,15 @@ Public Interface IReportsElement
     ''' <summary>リリースリストを取得します。</summary>
     ''' <returns>リリースリスト。</returns>
     ReadOnly Property Resources As IList(Of IReportsResources)
+
+    ''' <summary>マージンを取得します。</summary>
+    ReadOnly Property Margin As ReportsMargin
+
+    ''' <summary>パディングを取得します。</summary>
+    ReadOnly Property Padding As ReportsPadding
+
+    ''' <summary>クリップする、しないを取得します。</summary>
+    ReadOnly Property ClipToBounds As Boolean
 
     ''' <summary>リソースを取得します。</summary>
     ''' <param name="name">リソース名。</param>
@@ -39,6 +50,7 @@ Public Interface IReportsElement
 
     ''' <summary>印刷を実行します。</summary>
     ''' <param name="graphics">グラフィックオブジェクト。</param>
-    Sub Draw(graphics As Graphics)
+    ''' <param name="clipBounds">クリップ領域。</param>
+    Sub Draw(graphics As Graphics, clipBounds As Rectangle)
 
 End Interface

@@ -4,7 +4,7 @@ Option Explicit On
 Namespace Exceptions
 
     ''' <summary>レポート例外。</summary>
-    Public Class ReportsException
+    Public NotInheritable Class ReportsException
         Inherits Exception
 
         ''' <summary>コンストラクタ。</summary>

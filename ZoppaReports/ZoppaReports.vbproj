@@ -16,6 +16,7 @@
   <ItemGroup>
     <Compile Remove="Elements\IReportsElements_old.vb" />
     <Compile Remove="Elements\ReportsRect.vb" />
+    <Compile Remove="ReportHelper.vb" />
     <Compile Remove="ReportsInformation.vb" />
     <Compile Remove="ZoppaReports.template.vb" />
   </ItemGroup>

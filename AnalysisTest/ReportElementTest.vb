@@ -2,7 +2,7 @@
 Imports Microsoft.Extensions.Logging
 Imports Xunit
 Imports ZoppaReports
-Imports ZoppaReports.Settings
+Imports ZoppaReports.Smalls
 
 Public Class ReportElementTest
 

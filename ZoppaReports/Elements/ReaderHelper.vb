@@ -5,6 +5,7 @@ Imports System.Drawing
 Imports System.Runtime.CompilerServices
 Imports System.Text.RegularExpressions
 Imports ZoppaReports.Resources
+Imports ZoppaReports.Smalls
 
 ''' <summary>リーダー補助モジュール。</summary>
 Public Module ReaderHelper
@@ -12,13 +13,22 @@ Public Module ReaderHelper
     ' 色パターンの正規表現
     Private ReadOnly mColorPtnRegex As New Regex("^[0-9]{1,3}(,\s*[0-9]{1,3}){2,3}$", RegexOptions.Compiled)
 
+    ' デフォルトフォント
+    Private ReadOnly mDefaultFont As New Font("Meiryo", 12)
+
+    ''' <summary>デフォルトフォントを取得します。</summary>
+    Public ReadOnly Property DefaultFont As Font
+        Get
+            Return mDefaultFont
+        End Get
+    End Property
+
     ''' <summary>ノードを取得します。</summary>
     ''' <param name="nodeList">ノードリスト。</param>
     ''' <param name="nodeName">ノード名。</param>
     ''' <returns>ノード。</returns>
     <Extension()>
     Public Function GetNodeByName(nodeList As Xml.XmlNodeList, nodeName As String) As Xml.XmlNode
-        Dim resNode As Xml.XmlNode = Nothing
         For Each nd As Xml.XmlNode In nodeList
             If nd.Name.ToLower() = nodeName.ToLower() Then
                 Return nd
@@ -90,10 +100,20 @@ Public Module ReaderHelper
         Return Color.Transparent
     End Function
 
+    ''' <summary>フォントを取得します。</summary>
+    ''' <param name="value">XMLテンプレートから取得した値。</param>
+    ''' <returns>フォント。</returns>
     Friend Function ConvertFont(value As Object) As Font
-        Return CType(CObj(value), Font)
+        If value.GetType() Is GetType(Font) Then
+            Return CType(CObj(value), Font)
+        Else
+            Return DefaultFont
+        End If
     End Function
 
+    ''' <summary>ブラシを取得します。</summary>
+    ''' <param name="value">XMLテンプレートから取得した値。</param>
+    ''' <returns>ブラシ。</returns>
     Friend Function ConvertBrush(value As Object) As Brush
         If value.GetType() Is GetType(Brush) Then
             ' ブラシを返す
@@ -108,6 +128,14 @@ Public Module ReaderHelper
             Next
         End If
         Return Brushes.Black
+    End Function
+
+    Friend Function ConvertScalar(value As Object) As ReportsScalar
+        If value.GetType() Is GetType(ReportsScalar) Then
+            Return CType(CObj(value), ReportsScalar)
+        Else
+            Return CType(value.ToString(), ReportsScalar)
+        End If
     End Function
 
 End Module

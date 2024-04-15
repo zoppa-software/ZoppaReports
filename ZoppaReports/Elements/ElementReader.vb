@@ -1,6 +1,7 @@
 ﻿Option Strict On
 Option Explicit On
 
+Imports ZoppaReports.Container
 Imports ZoppaReports.Draw
 Imports ZoppaReports.Resources
 
@@ -10,6 +11,8 @@ Public Module ElementReader
     Public Const RESOURCES_TAG As String = "resources"
 
     Public Const LABEL_TAG As String = "label"
+
+    Public Const CANVAS_TAG As String = "canvas"
 
     ''' <summary>XMLノードから要素を取得します。</summary>
     ''' <typeparam name="T">要素型。</typeparam>
@@ -50,16 +53,25 @@ Public Module ElementReader
                 CollectResources(node, rep, env)
                 rep.GetBaseStyle(GetType(ReportsElement))?.ExpandProperties(rep)
                 For Each attr As Xml.XmlAttribute In node.Attributes
-                    rep.SetProperty(attr.Name, Replace(attr.Value, env, element))
+                    rep.SetProperty(attr.Name, Replace(attr.Value, env, rep))
                 Next
                 res = rep
+
+            Case CANVAS_TAG
+                Dim lele As New CanvasElement(element)
+                CollectResources(node, lele, env)
+                lele.GetBaseStyle(GetType(CanvasElement))?.ExpandProperties(lele)
+                For Each attr As Xml.XmlAttribute In node.Attributes
+                    lele.SetProperty(attr.Name, Replace(attr.Value, env, lele))
+                Next
+                res = lele
 
             Case LABEL_TAG
                 Dim lele As New LabelElement(element)
                 CollectResources(node, lele, env)
                 lele.GetBaseStyle(GetType(LabelElement))?.ExpandProperties(lele)
                 For Each attr As Xml.XmlAttribute In node.Attributes
-                    lele.SetProperty(attr.Name, Replace(attr.Value, env, element))
+                    lele.SetProperty(attr.Name, Replace(attr.Value, env, lele))
                 Next
                 res = lele
 
@@ -82,6 +94,9 @@ Public Module ElementReader
 
     Public Function GetElementType(tagName As String) As Type
         Select Case tagName.ToLower()
+            Case CANVAS_TAG
+                Return GetType(CanvasElement)
+
             Case LABEL_TAG
                 Return GetType(LabelElement)
 

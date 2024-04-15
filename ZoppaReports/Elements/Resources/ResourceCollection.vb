@@ -5,6 +5,7 @@ Namespace Resources
 
     ''' <summary>リソースコレクション。</summary>
     Public NotInheritable Class ResourceCollection
+        Implements IDisposable
 
         ' リソースリスト
         Private ReadOnly mResources As New SortedList(Of String, IReportsResources)
@@ -73,6 +74,13 @@ Namespace Resources
                 Return Nothing
             End If
         End Function
+
+        ''' <summary>リソースを解放します。</summary>
+        Public Sub Dispose() Implements IDisposable.Dispose
+            For Each res As IReportsResources In Me.mResources.Values
+                res.Dispose()
+            Next
+        End Sub
 
     End Class
 

@@ -3,7 +3,7 @@ Option Explicit On
 
 Imports System.Drawing.Printing
 
-Namespace Settings
+Namespace Smalls
 
     ''' <summary>帳票の向き。</summary>
     Public NotInheritable Class ReportsOrientation

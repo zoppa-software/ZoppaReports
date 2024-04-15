@@ -2,6 +2,7 @@
 Option Explicit On
 
 Imports System.Drawing
+Imports System.Windows
 Imports ZoppaReports.Resources
 
 ''' <summary>リソースリーダー。</summary>
@@ -43,37 +44,27 @@ Public Module ResourceReader
         Select Case node.Name.ToLower()
             Case "brush"
                 Dim bres As New BrushResource(nm.Value)
-                For Each attr As Xml.XmlAttribute In node.Attributes
-                    bres.SetProperty(attr.Name, Replace(attr.Value, env, element))
-                Next
+                SetResProperties(bres, node, element, env)
                 Return bres
 
             Case "font"
                 Dim fres As New FontResource(nm.Value)
-                For Each attr As Xml.XmlAttribute In node.Attributes
-                    fres.SetProperty(attr.Name, Replace(attr.Value, env, element))
-                Next
+                SetResProperties(fres, node, element, env)
                 Return fres
 
             Case "pen"
                 Dim pres As New PenResource(nm.Value)
-                For Each attr As Xml.XmlAttribute In node.Attributes
-                    pres.SetProperty(attr.Name, Replace(attr.Value, env, element))
-                Next
+                SetResProperties(pres, node, element, env)
                 Return pres
 
             Case "color"
                 Dim cres As New ColorResource(nm.Value)
-                For Each attr As Xml.XmlAttribute In node.Attributes
-                    cres.SetProperty(attr.Name, Replace(attr.Value, env, element))
-                Next
+                SetResProperties(cres, node, element, env)
                 Return cres
 
             Case "style"
                 Dim sres As New StyleResource(nm?.Value)
-                For Each attr As Xml.XmlAttribute In node.Attributes
-                    sres.SetProperty(attr.Name, Replace(attr.Value, env, element))
-                Next
+                SetResProperties(sres, node, element, env)
                 For Each nd As Xml.XmlNode In node.ChildNodes
                     sres.AddSetter(ConvertSetter(nd, env, element))
                 Next
@@ -83,6 +74,17 @@ Public Module ResourceReader
                 Return Nothing
         End Select
     End Function
+
+    ''' <summary>リソースのプロパティを設定します。</summary>
+    ''' <param name="ansres">リソース。</param>
+    ''' <param name="node">XMLノード。</param>
+    ''' <param name="element">要素。</param>
+    ''' <param name="env">バインディングデータ。</param>
+    Private Sub SetResProperties(ansres As IReportsResources, node As Xml.XmlNode, element As IReportsElement, env As Environments)
+        For Each attr As Xml.XmlAttribute In node.Attributes
+            ansres.SetProperty(attr.Name, Replace(attr.Value, env, element))
+        Next
+    End Sub
 
     ''' <summary>セッターを変換します。</summary>
     ''' <param name="nd">XMLノード。</param>

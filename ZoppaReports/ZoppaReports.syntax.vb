@@ -16,6 +16,10 @@ Partial Module ZoppaReports
     ' コマンド履歴
     Private ReadOnly _cmdHistory As New List(Of (String, List(Of TokenPosition)))(MAX_HISTORY_SIZE \ 2)
 
+    ''' <summary>式を評価します。</summary>
+    ''' <param name="expression">評価する式。</param>
+    ''' <param name="parameter">パラメータ。</param>
+    ''' <returns>評価結果。</returns>
     <Extension>
     Public Function Executes(expression As String, Optional parameter As Object = Nothing) As IToken
         Using scope = _logger.Value?.BeginScope(NameOf(Executes))
@@ -30,6 +34,10 @@ Partial Module ZoppaReports
         End Using
     End Function
 
+    ''' <summary>環境変数を指定して評価します。</summary>
+    ''' <param name="expression">評価する式。</param>
+    ''' <param name="parameter">環境変数。</param>
+    ''' <returns>評価結果。</returns>
     Friend Function ExecutesRefEnvironments(expression As String, parameter As Environments) As IToken
         If Logger.Value IsNot Nothing Then
             parameter.Logging(Logger.Value)

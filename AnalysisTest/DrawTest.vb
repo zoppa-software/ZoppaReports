@@ -9,9 +9,9 @@ Public Class DrawTest
     Public Sub LabelTest()
         Dim doc As New Xml.XmlDocument()
         doc.LoadXml("<label text='123' font='@{lb font}' >
-    <resource>
-        <font name='lb font' family='#{Fam}' emsize='9.0' style='Italic' />
-    </resource>
+    <resources>
+        <font name='lb font' family='Meiryo UI' emsize='9.0' style='Italic' />
+    </resources>
 </label>")
         Dim ln = GetElementFromXml(Of LabelElement)(doc.FirstChild, Nothing)
         'Assert.Equal("def font", fn.Name)

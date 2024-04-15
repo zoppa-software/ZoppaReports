@@ -2,18 +2,14 @@
 Option Explicit On
 
 Imports System.Drawing
+Imports ZoppaReports.Container
 Imports ZoppaReports.Resources
-Imports ZoppaReports.Settings
+Imports ZoppaReports.Smalls
 
 ''' <summary>レポート要素。</summary>
 Public NotInheritable Class ReportsElement
-    Implements IReportsElement, IHasProperties
-
-    ' リソースコレクション
-    Private ReadOnly mResCollection As New ResourceCollection
-
-    ' 子要素コレクション
-    Private ReadOnly mChildren As New List(Of IReportsElement)
+    Inherits CommonElement
+    Implements IHasProperties
 
     ' ページサイズ
     Private mSize As ReportsSize = ReportsSize.A4
@@ -22,31 +18,17 @@ Public NotInheritable Class ReportsElement
     Private mOrientation As ReportsOrientation = ReportsOrientation.Portrait
 
     ' 幅
-    Private mWidth As ReportsCoord = ReportsCoord.Zero
+    Private mWidth As ReportsScalar = ReportsScalar.Zero
 
     ' 高さ
-    Private mHeight As ReportsCoord = ReportsCoord.Zero
+    Private mHeight As ReportsScalar = ReportsScalar.Zero
 
 #Region "properties"
 
     ''' <summary>親要素を取得します。</summary>
-    Public ReadOnly Property Parent As IReportsElement Implements IReportsElement.Parent
+    Public Overrides ReadOnly Property Parent As IReportsElement
         Get
             Return Nothing
-        End Get
-    End Property
-
-    ''' <summary>子要素リストを取得します。</summary>
-    Public ReadOnly Property Children As IList(Of IReportsElement) Implements IReportsElement.Children
-        Get
-            Return Me.mChildren
-        End Get
-    End Property
-
-    ''' <summary>リソースリストを取得します。</summary>
-    Public ReadOnly Property Resources As IList(Of IReportsResources) Implements IReportsElement.Resources
-        Get
-            Return Me.mResCollection.Resources
         End Get
     End Property
 
@@ -71,45 +53,39 @@ Public NotInheritable Class ReportsElement
         ' 空実装
     End Sub
 
-    ''' <summary>子要素を追加します。</summary>
-    ''' <param name="child">子要素。</param>
-    Public Sub AddChildElement(child As IReportsElement) Implements IReportsElement.AddChildElement
-        Me.mChildren.Add(child)
-    End Sub
-
-    ''' <summary>リソースを追加します。</summary>
-    ''' <param name="addRes">リソース。</param>
-    Public Sub AddResources(addRes As IReportsResources) Implements IReportsElement.AddResources
-        Me.mResCollection.Add(addRes)
-    End Sub
-
     ''' <summary>印刷を実行します。</summary>
     ''' <param name="graphics">グラフィックオブジェクト。</param>
-    Public Sub Draw(graphics As Graphics) Implements IReportsElement.Draw
-        If Me.mOrientation = ReportsOrientation.Landscape Then
-            graphics.SetClip(New Rectangle(0, 0, CInt(Me.mSize.Height.Pixel), CInt(Me.mSize.Width.Pixel)))
-        Else
-            graphics.SetClip(New Rectangle(0, 0, CInt(Me.mSize.Width.Pixel), CInt(Me.mSize.Height.Pixel)))
-        End If
+    ''' <param name="clipBounds">クリップ領域。</param>
+    Public Overrides Sub Draw(graphics As Graphics, clipBounds As Rectangle)
+        ' マージン、パディングを適用
+        graphics.TranslateTransform(
+            CSng(Me.Margin.Left.Pixel + Me.Padding.Left.Pixel),
+            CSng(Me.Margin.Top.Pixel + Me.Padding.Top.Pixel)
+        )
 
+        ' クリップ領域を設定
+        Dim wid = CInt(Me.mSize.Width.Pixel)
+        Dim hig = CInt(Me.mSize.Height.Pixel)
+        clipBounds = If(
+            Me.mOrientation = ReportsOrientation.Landscape,
+            New Rectangle(0, 0, hig, wid),
+            New Rectangle(0, 0, wid, hig)
+        )
+
+        ' 子要素を描画
         For Each child In Me.mChildren
-            child.Draw(graphics)
+            Dim cliped = child.ClipToBounds
+            If cliped Then
+                graphics.SetClip(clipBounds)
+            End If
+
+            child.Draw(graphics, clipBounds)
+
+            If cliped Then
+                graphics.ResetClip()
+            End If
         Next
     End Sub
-
-    ''' <summary>リソースを取得します。</summary>
-    ''' <param name="name">リソース名。</param>
-    ''' <returns>リソース。</returns>
-    Public Function GetResource(Of T As {IReportsResources})(name As String) As T Implements IReportsElement.GetResource
-        Return Me.mResCollection.GetResource(Of T)(name)
-    End Function
-
-    ''' <summary>基本スタイルを取得します。</summary>
-    ''' <param name="typeBase">適用する型。</param>
-    ''' <returns>スタイルリソース。</returns>
-    Public Function GetBaseStyle(typeBase As Type) As StyleResource Implements IReportsElement.GetBaseStyle
-        Return Me.mResCollection.GetBaseStyle(typeBase)
-    End Function
 
     ''' <summary>プロパティを設定します。</summary>
     ''' <param name="name">プロパティ名。</param>
@@ -134,6 +110,9 @@ Public NotInheritable Class ReportsElement
                 Return True
 
             Case Else
+                If Me.SetCommonProperty(name, value) Then
+                    Return True
+                End If
                 Return False
         End Select
     End Function
